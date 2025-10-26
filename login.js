@@ -7,7 +7,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDbzwAI7OGNPSNMXqTDz5vJH1A-gE-VxKs",
   authDomain: "conexion-4-13.firebaseapp.com",
   projectId: "conexion-4-13",
-  storageBucket: "conexion-4-13.firebasestorage.app",
+  storageBucket: "conexion-4-13.appspot.com",
   messagingSenderId: "508766935713",
   appId: "1:508766935713:web:318bc72eb805de3faceee0",
   measurementId: "G-HW8K01LJZQ"
@@ -25,10 +25,10 @@ function signInWithGoogle() {
     .then((result) => {
       const user = result.user;
       console.log('Usuario autenticado con Google:', user);
-      window.location.href = "index.html";
+      window.location.href = "index.html"; // Redirige después de login
     })
     .catch((error) => {
-      console.error("Error al iniciar sesión con Google: ", error.message);
+      console.error("Error al iniciar sesión con Google:", error.message);
       alert("Error al iniciar sesión con Google: " + error.message);
     });
 }

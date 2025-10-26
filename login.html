@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro con Google</title>
+  <title>Login con Google</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -43,12 +43,15 @@
   </style>
 </head>
 <body>
-  <button class="google-btn">
+  <button id="btn-google" class="google-btn">
     <img 
       class="google-icon" 
       src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
       alt="Google icon">
     Registrarse con Google
   </button>
+
+  <!-- Incluir tu JS como módulo -->
+  <script type="module" src="login.js"></script>
 </body>
 </html>
