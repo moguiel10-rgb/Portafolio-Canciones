@@ -18,7 +18,7 @@
                 <i class="fas fa-bars"></i>
             </div>
             <div class="menu">
-                <a href="login.html">Iniciar Sesión</a>
+                <a href="login.html" id="login-link">Iniciar Sesión</a>
                 <a href="#Acerca de">Acerca de</a>
                 <a href="#Portafolio">Portafolio</a>
                 <a href="#transponer-pdf">Transponer</a>
@@ -44,7 +44,7 @@
                 </div>
             </div>
         </section>
-        <section class="portafolio" id="Portafolio">
+        <section class="portafolio" id="Portafolio" style="display: none;">
             <div class="contenedor">
                 <h2 class="titulo">Portafolio</h2>
                 <div class="pdf-list">
@@ -508,8 +508,89 @@
         </div>
         <h2 class="titulo-final">&copy; 2025 Conexión 4:13 | Todos los derechos reservados</h2>
     </footer>
+        <!-- 1. Asegúrate de que el modal de imagen esté presente si tu Acordes.js lo necesita -->
+    <!-- Si ya tienes el modal en tu HTML, puedes omitir este div -->
+    <div id="imagenModal" class="modal">
+        <span class="cerrar">&times;</span>
+        <img class="modal-contenido" id="imagenAmpliada">
+        <div id="pieFoto"></div>
+    </div>
+    
+    <!-- 2. Cargar las librerías necesarias para PDF y jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- 3. Lógica de Autenticación de Firebase y Control de Visibilidad -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        
+        // 🔧 Configuración de Firebase (COPIADA DE TU login.js )
+        const firebaseConfig = {
+          apiKey: "AIzaSyDbzwAI7OGNPSNMXqTDz5vJH1A-gE-VxKs",
+          authDomain: "conexion-4-13.firebaseapp.com",
+          projectId: "conexion-4-13",
+          storageBucket: "conexion-4-13.firebasestorage.app",
+          messagingSenderId: "508766935713",
+          appId: "1:508766935713:web:318bc72eb805de3faceee0",
+          measurementId: "G-HW8K01LJZQ"
+        };
+        
+        // 🚀 Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // 2. Lógica de verificación de sesión
+        onAuthStateChanged(auth, (user) => {
+            const portafolio = document.getElementById('Portafolio');
+            const transponer = document.getElementById('transponer-pdf'); // Usando el ID sugerido
+            const loginLink = document.getElementById('login-link');
+
+            if (user) {
+                // Usuario logueado
+                console.log("Usuario autenticado:", user.email);
+                
+                // 1. Mostrar secciones protegidas
+                if (portafolio) portafolio.style.display = 'block';
+                if (transponer) transponer.style.display = 'block';
+
+                // 2. Cambiar enlace de "Iniciar Sesión" a "Cerrar Sesión"
+                if (loginLink) {
+                    loginLink.textContent = 'Cerrar Sesión';
+                    loginLink.href = '#'; // Evita la navegación
+                    loginLink.onclick = () => {
+                        signOut(auth).then(() => {
+                            // Redirigir a la página de inicio o recargar
+                            window.location.reload(); 
+                        }).catch((error) => {
+                            console.error("Error al cerrar sesión:", error);
+                        });
+                        return false;
+                    };
+                }
+
+            } else {
+                // Usuario no logueado
+                console.log("Usuario no autenticado.");
+                
+                // 1. Ocultar secciones protegidas (ya están ocultas por defecto, pero es buena práctica)
+                if (portafolio) portafolio.style.display = 'none';
+                if (transponer) transponer.style.display = 'none';
+
+                // 2. Asegurar que el enlace sea a la página de login
+                if (loginLink) {
+                    loginLink.textContent = 'Iniciar Sesión';
+                    loginLink.href = 'login.html';
+                    loginLink.onclick = null;
+                }
+            }
+        });
+    </script>
+
+    <!-- 4. Tu script principal debe ser el último en cargarse -->
     <script src="Acordes.js"></script>
+</body>
+</html>
+
 </body>
 </html>
