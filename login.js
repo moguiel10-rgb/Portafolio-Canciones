@@ -8,7 +8,8 @@ import {
   GoogleAuthProvider, 
   FacebookAuthProvider,
   signInWithPopup, 
-  getRedirectResult 
+  signInWithRedirect, 
+  getRedirectResult
 } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
 import { 
@@ -31,7 +32,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
 
-// 🧭 Detectar si estamos en WebView (aunque ya no lo usaremos para redirigir)
+// 🧭 Detectar si estamos en un WebView o navegador móvil
 function isInWebView() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
   return (
@@ -57,29 +58,36 @@ function loginWithProvider(providerName) {
   if (providerName === "google") provider = googleProvider;
   if (providerName === "facebook") provider = facebookProvider;
 
-  console.log(`🔐 Iniciando sesión con ${providerName} (popup)`);
+  // Detectar si es móvil o WebView
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      const user = result.user;
-      console.log(`✅ Usuario autenticado con ${providerName}:`, user);
-      window.location.href = "index.html"; // Redirigir tras login
-    })
-    .catch((error) => {
-      console.error(`❌ Error al iniciar sesión con ${providerName}:`, error.message);
-      alert(`Error al iniciar sesión con ${providerName}: ${error.message}`);
-    });
+  if (isMobile || inWebView) {
+    console.log(`📱 Iniciando sesión con ${providerName} usando redirect`);
+    signInWithRedirect(auth, provider);
+  } else {
+    console.log(`💻 Iniciando sesión con ${providerName} usando popup`);
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        console.log(`✅ Usuario autenticado con ${providerName}:`, user);
+        window.location.href = "index.html";
+      })
+      .catch((error) => {
+        console.error(`❌ Error con ${providerName}:`, error.message);
+        alert(`Error con ${providerName}: ${error.message}`);
+      });
+  }
 }
 
 // 🖱️ Asignar eventos a los botones
 document.getElementById("btn-google").addEventListener("click", () => loginWithProvider("google"));
 document.getElementById("btn-facebook").addEventListener("click", () => loginWithProvider("facebook"));
 
-// (Opcional) Procesar resultado de redirect si alguna vez se usa
+// 📥 Procesar el resultado del redirect (cuando regresa del login)
 getRedirectResult(auth)
   .then((result) => {
     if (result && result.user) {
-      console.log("✅ Usuario autenticado (redirect):", result.user);
+      console.log("✅ Usuario autenticado tras redirect:", result.user);
       window.location.href = "index.html";
     }
   })
@@ -87,4 +95,4 @@ getRedirectResult(auth)
     console.error("❌ Error al procesar redirect:", error.message);
   });
 
-console.log("✅ Autenticación Google + Facebook habilitada con popups.");
+console.log("✅ Autenticación Google + Facebook lista (popup/redirect automático).");
