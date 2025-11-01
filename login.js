@@ -1,3 +1,4 @@
+// 🔥 Importar SDKs de Firebase
 import { 
   initializeApp 
 } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
@@ -7,7 +8,6 @@ import {
   GoogleAuthProvider, 
   FacebookAuthProvider,
   signInWithPopup, 
-  signInWithRedirect, 
   getRedirectResult 
 } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
@@ -31,60 +31,51 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
 
-const googleProvider = new GoogleAuthProvider();
-const facebookProvider = new FacebookAuthProvider();
-
-// 🧭 Detectar si estamos en un WebView
+// 🧭 Detectar si estamos en WebView (aunque ya no lo usaremos para redirigir)
 function isInWebView() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
   return (
-    ua.includes("wv") ||
-    window.ReactNativeWebView ||
-    ua.includes("Median") ||
+    ua.includes("wv") ||                      // Android WebView
+    window.ReactNativeWebView ||              // React Native WebView
+    ua.includes("Median") ||                  // Median usa su propio userAgent
     window.location.href.startsWith("file://") ||
     window.location.href.includes("median.run")
   );
 }
 
 const inWebView = isInWebView();
+console.log("📱 WebView detectado:", inWebView);
 
-// 🔑 Login con Google
-function signInWithGoogle() {
-  if (inWebView) {
-    signInWithRedirect(auth, googleProvider);
-  } else {
-    signInWithPopup(auth, googleProvider)
-      .then((result) => {
-        const user = result.user;
-        console.log("✅ Google login:", user);
-        window.location.href = "index.html";
-      })
-      .catch((error) => {
-        console.error("❌ Error Google:", error.message);
-        alert("Error al iniciar sesión con Google: " + error.message);
-      });
-  }
+// 🔑 Proveedores de autenticación
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
+
+// 📩 Función genérica de login
+function loginWithProvider(providerName) {
+  let provider;
+
+  if (providerName === "google") provider = googleProvider;
+  if (providerName === "facebook") provider = facebookProvider;
+
+  console.log(`🔐 Iniciando sesión con ${providerName} (popup)`);
+
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      const user = result.user;
+      console.log(`✅ Usuario autenticado con ${providerName}:`, user);
+      window.location.href = "index.html"; // Redirigir tras login
+    })
+    .catch((error) => {
+      console.error(`❌ Error al iniciar sesión con ${providerName}:`, error.message);
+      alert(`Error al iniciar sesión con ${providerName}: ${error.message}`);
+    });
 }
 
-// 🔑 Login con Facebook
-function signInWithFacebook() {
-  if (inWebView) {
-    signInWithRedirect(auth, facebookProvider);
-  } else {
-    signInWithPopup(auth, facebookProvider)
-      .then((result) => {
-        const user = result.user;
-        console.log("✅ Facebook login:", user);
-        window.location.href = "index.html";
-      })
-      .catch((error) => {
-        console.error("❌ Error Facebook:", error.message);
-        alert("Error al iniciar sesión con Facebook: " + error.message);
-      });
-  }
-}
+// 🖱️ Asignar eventos a los botones
+document.getElementById("btn-google").addEventListener("click", () => loginWithProvider("google"));
+document.getElementById("btn-facebook").addEventListener("click", () => loginWithProvider("facebook"));
 
-// 📩 Procesar redirect (para ambos)
+// (Opcional) Procesar resultado de redirect si alguna vez se usa
 getRedirectResult(auth)
   .then((result) => {
     if (result && result.user) {
@@ -93,11 +84,7 @@ getRedirectResult(auth)
     }
   })
   .catch((error) => {
-    console.error("❌ Error redirect:", error.message);
+    console.error("❌ Error al procesar redirect:", error.message);
   });
 
-// 🖱️ Eventos de botones
-document.getElementById("btn-google").addEventListener("click", signInWithGoogle);
-document.getElementById("btn-facebook").addEventListener("click", signInWithFacebook);
-
-console.log("✅ Autenticación con Google y Facebook habilitada.");
+console.log("✅ Autenticación Google + Facebook habilitada con popups.");
