@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login con Google</title>
+  <title>Login con Google y Facebook</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -16,7 +16,7 @@
       background-size: cover;
       background-position: center;
       background-image: url('Imagenes/alfombra.jpg');
-      background-color: #fdfafa; /* color de respaldo */
+      background-color: #fdfafa;
     }
 
     .login-container {
@@ -44,14 +44,11 @@
       font-size: 15px;
     }
 
-    .google-btn {
+    .btn {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      background-color: #ffffff;
-      color: #444;
-      border: 1px solid #ddd;
       border-radius: 10px;
       padding: 12px 25px;
       font-size: 16px;
@@ -60,15 +57,27 @@
       transition: all 0.3s ease;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
       width: 100%;
+      margin-bottom: 15px;
     }
 
-    .google-btn:hover {
-      background-color: #f9f9f9;
+    .btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
     }
 
-    .google-icon {
+    .google-btn {
+      background-color: #ffffff;
+      color: #444;
+      border: 1px solid #ddd;
+    }
+
+    .facebook-btn {
+      background-color: #1877f2;
+      color: #fff;
+      border: none;
+    }
+
+    .google-icon, .facebook-icon {
       width: 26px;
       height: 26px;
     }
@@ -82,18 +91,28 @@
 <body>
   <div class="login-container">
     <h1>¡Bienvenido!</h1>
-    <p>Accede fácilmente con tu cuenta de Google</p>
+    <p>Accede fácilmente con tu cuenta</p>
 
-    <button id="btn-google" class="google-btn">
+    <!-- Botón Google -->
+    <button id="btn-google" class="btn google-btn">
       <img 
         class="google-icon" 
         src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
         alt="Google icon">
       Continuar con Google
     </button>
+
+    <!-- Botón Facebook -->
+    <button id="btn-facebook" class="btn facebook-btn">
+      <img 
+        class="facebook-icon" 
+        src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
+        alt="Facebook icon">
+      Continuar con Facebook
+    </button>
   </div>
 
-  <!-- Incluir tu JS como módulo -->
+  <!-- Tu script -->
   <script type="module" src="login.js"></script>
 </body>
 </html>

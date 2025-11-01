@@ -5,6 +5,7 @@ import {
 import { 
   getAuth, 
   GoogleAuthProvider, 
+  FacebookAuthProvider,
   signInWithPopup, 
   signInWithRedirect, 
   getRedirectResult 
@@ -29,43 +30,61 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
-const provider = new GoogleAuthProvider();
 
-// 🧭 Detectar si estamos en un WebView (incluye Median)
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
+
+// 🧭 Detectar si estamos en un WebView
 function isInWebView() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
   return (
-    ua.includes("wv") ||                      // Android WebView
-    window.ReactNativeWebView ||              // React Native WebView
-    ua.includes("Median") ||                  // Median usa su propio userAgent
+    ua.includes("wv") ||
+    window.ReactNativeWebView ||
+    ua.includes("Median") ||
     window.location.href.startsWith("file://") ||
-    window.location.href.includes("median.run") // Median usa dominios *.median.run
+    window.location.href.includes("median.run")
   );
 }
 
 const inWebView = isInWebView();
 
-// 🔑 Función de login con Google
+// 🔑 Login con Google
 function signInWithGoogle() {
   if (inWebView) {
-    console.log("Iniciando sesión con redirect (WebView detectado)");
-    signInWithRedirect(auth, provider);
+    signInWithRedirect(auth, googleProvider);
   } else {
-    console.log("Iniciando sesión con popup (navegador detectado)");
-    signInWithPopup(auth, provider)
+    signInWithPopup(auth, googleProvider)
       .then((result) => {
         const user = result.user;
-        console.log("✅ Usuario autenticado (popup):", user);
+        console.log("✅ Google login:", user);
         window.location.href = "index.html";
       })
       .catch((error) => {
-        console.error("❌ Error en login con popup:", error.message);
+        console.error("❌ Error Google:", error.message);
         alert("Error al iniciar sesión con Google: " + error.message);
       });
   }
 }
 
-// 📩 Procesar el resultado del redirect
+// 🔑 Login con Facebook
+function signInWithFacebook() {
+  if (inWebView) {
+    signInWithRedirect(auth, facebookProvider);
+  } else {
+    signInWithPopup(auth, facebookProvider)
+      .then((result) => {
+        const user = result.user;
+        console.log("✅ Facebook login:", user);
+        window.location.href = "index.html";
+      })
+      .catch((error) => {
+        console.error("❌ Error Facebook:", error.message);
+        alert("Error al iniciar sesión con Facebook: " + error.message);
+      });
+  }
+}
+
+// 📩 Procesar redirect (para ambos)
 getRedirectResult(auth)
   .then((result) => {
     if (result && result.user) {
@@ -74,13 +93,11 @@ getRedirectResult(auth)
     }
   })
   .catch((error) => {
-    if (inWebView) {
-      console.error("❌ Error en login con redirect:", error.message);
-      alert("Error al iniciar sesión con Google: " + error.message);
-    }
+    console.error("❌ Error redirect:", error.message);
   });
 
-// 🖱️ Asignar evento al botón
+// 🖱️ Eventos de botones
 document.getElementById("btn-google").addEventListener("click", signInWithGoogle);
+document.getElementById("btn-facebook").addEventListener("click", signInWithFacebook);
 
-console.log("✅ Autenticación con Google habilitada.");
+console.log("✅ Autenticación con Google y Facebook habilitada.");
