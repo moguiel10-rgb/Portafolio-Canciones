@@ -5,8 +5,7 @@ import {
 
 import { 
   getAuth, 
-  GoogleAuthProvider, 
-  FacebookAuthProvider,
+  GoogleAuthProvider,
   signInWithPopup, 
   signInWithRedirect,
   getRedirectResult 
@@ -46,16 +45,10 @@ function isInWebView() {
 const inWebView = isInWebView();
 console.log("📱 WebView detectado:", inWebView);
 
-// ✅ Proveedores de autenticación
+// ✅ Proveedor de autenticación de Google
 const googleProvider = new GoogleAuthProvider();
-const facebookProvider = new FacebookAuthProvider();
 
-// 🔒 Forzar popup en Facebook
-facebookProvider.setCustomParameters({
-  display: 'popup'
-});
-
-// 🧠 Verificar si sessionStorage está disponible (evita error "missing initial state")
+// 🧠 Verificar si sessionStorage está disponible
 function storageAvailable(type) {
   try {
     const storage = window[type];
@@ -68,14 +61,9 @@ function storageAvailable(type) {
   }
 }
 
-// 🚪 Función genérica para login
-function loginWithProvider(providerName) {
-  let provider;
-
-  if (providerName === "google") provider = googleProvider;
-  if (providerName === "facebook") provider = facebookProvider;
-
-  console.log(`🔐 Iniciando sesión con ${providerName}`);
+// 🚪 Función para login con Google
+function loginWithGoogle() {
+  console.log("🔐 Iniciando sesión con Google");
 
   if (!storageAvailable('sessionStorage')) {
     alert("⚠️ Tu navegador o app no permite almacenamiento local. Abre esta página en Chrome o Safari fuera de la app.");
@@ -85,25 +73,24 @@ function loginWithProvider(providerName) {
   // 🧭 Si estamos dentro de un WebView, usamos redirect
   if (inWebView) {
     console.log("🌐 WebView detectado — usando redirect");
-    signInWithRedirect(auth, provider);
+    signInWithRedirect(auth, googleProvider);
   } else {
     // 💨 En navegadores normales, usamos popup
-    signInWithPopup(auth, provider)
+    signInWithPopup(auth, googleProvider)
       .then((result) => {
         const user = result.user;
-        console.log(`✅ Usuario autenticado con ${providerName}:`, user);
+        console.log("✅ Usuario autenticado con Google:", user);
         window.location.href = "index.html";
       })
       .catch((error) => {
-        console.error(`❌ Error al iniciar sesión con ${providerName}:`, error.message);
-        alert(`Error al iniciar sesión con ${providerName}: ${error.message}`);
+        console.error("❌ Error al iniciar sesión con Google:", error.message);
+        alert(`Error al iniciar sesión con Google: ${error.message}`);
       });
   }
 }
 
-// 🖱️ Asignar eventos a los botones
-document.getElementById("btn-google").addEventListener("click", () => loginWithProvider("google"));
-document.getElementById("btn-facebook").addEventListener("click", () => loginWithProvider("facebook"));
+// 🖱️ Asignar evento al botón de Google
+document.getElementById("btn-google").addEventListener("click", loginWithGoogle);
 
 // 🔁 Procesar resultado del redirect (para WebViews)
 getRedirectResult(auth)
@@ -119,5 +106,4 @@ getRedirectResult(auth)
     }
   });
 
-console.log("✅ Autenticación Google + Facebook lista (popup + fallback redirect).");
-// Versión correcta
+console.log("✅ Autenticación Google lista (popup + fallback redirect).");
