@@ -5,7 +5,8 @@ import {
 
 import { 
   getAuth, 
-  GoogleAuthProvider,
+  GoogleAuthProvider, 
+  FacebookAuthProvider,
   signInWithPopup, 
   signInWithRedirect,
   getRedirectResult 
@@ -31,25 +32,30 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
 
-// 🧭 Detectar si estamos dentro de un WebView Median
+// 🧭 Detectar si estamos dentro de un WebView
 function isInWebView() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
   return (
-    ua.includes("wv") || 
-    window.ReactNativeWebView || 
-    ua.includes("Median") || 
+    ua.includes("wv") ||                      // Android WebView
+    window.ReactNativeWebView ||              // React Native
+    ua.includes("Median") ||                  // WebView de Median
     window.location.href.startsWith("file://") ||
     window.location.href.includes("median.run")
   );
 }
-
 const inWebView = isInWebView();
 console.log("📱 WebView detectado:", inWebView);
 
-// ✅ Proveedor de autenticación de Google
+// ✅ Proveedores de autenticación
 const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 
-// 🧠 Verificar si sessionStorage está disponible
+// 🔒 Forzar popup en Facebook
+facebookProvider.setCustomParameters({
+  display: 'popup'
+});
+
+// 🧠 Verificar si sessionStorage está disponible (evita error "missing initial state")
 function storageAvailable(type) {
   try {
     const storage = window[type];
@@ -62,45 +68,50 @@ function storageAvailable(type) {
   }
 }
 
-// 🚪 Función para login con Google
-function loginWithGoogle() {
-  console.log("🔐 Iniciando sesión con Google");
+// 🚪 Función genérica para login
+function loginWithProvider(providerName) {
+  let provider;
+
+  if (providerName === "google") provider = googleProvider;
+  if (providerName === "facebook") provider = facebookProvider;
+
+  console.log(`🔐 Iniciando sesión con ${providerName}`);
 
   if (!storageAvailable('sessionStorage')) {
     alert("⚠️ Tu navegador o app no permite almacenamiento local. Abre esta página en Chrome o Safari fuera de la app.");
     return;
   }
 
+  // 🧭 Si estamos dentro de un WebView, usamos redirect
   if (inWebView) {
-    // 🌐 En Median (WebView), usamos redirect
-    console.log("🌐 WebView detectado — usando redirect con Firebase");
-    signInWithRedirect(auth, googleProvider);
+    console.log("🌐 WebView detectado — usando redirect");
+    signInWithRedirect(auth, provider);
   } else {
-    // 💨 En navegador normal, popup
-    signInWithPopup(auth, googleProvider)
+    // 💨 En navegadores normales, usamos popup
+    signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        console.log("✅ Usuario autenticado con Google:", user);
-        // 🔁 Redirigir al esquema de Median (deep link)
-        window.location.href = "conexionapp://auth?success=true";
+        console.log(`✅ Usuario autenticado con ${providerName}:`, user);
+        window.location.href = "index.html";
       })
       .catch((error) => {
-        console.error("❌ Error al iniciar sesión con Google:", error.message);
-        alert(`Error al iniciar sesión con Google: ${error.message}`);
+        console.error(`❌ Error al iniciar sesión con ${providerName}:`, error.message);
+        alert(`Error al iniciar sesión con ${providerName}: ${error.message}`);
       });
   }
 }
 
-// 🖱️ Asignar evento al botón de Google
-document.getElementById("btn-google").addEventListener("click", loginWithGoogle);
+// 🖱️ Asignar eventos a los botones
+document.getElementById("btn-google").addEventListener("click", () => loginWithProvider("google"));
+document.getElementById("btn-facebook").addEventListener("click", () => loginWithProvider("facebook"));
 
 // 🔁 Procesar resultado del redirect (para WebViews)
 getRedirectResult(auth)
   .then((result) => {
-  if (result && result.user) {
-  console.log("✅ Usuario autenticado (redirect):", result.user);
-  window.location.href = "https://conexion-4-13.firebaseapp.com/auth-redirect.html";
-}
+    if (result && result.user) {
+      console.log("✅ Usuario autenticado (redirect):", result.user);
+      window.location.href = "index.html";
+    }
   })
   .catch((error) => {
     if (error && error.message) {
@@ -108,4 +119,5 @@ getRedirectResult(auth)
     }
   });
 
-console.log("✅ Autenticación Google lista (popup + fallback redirect).");
+console.log("✅ Autenticación Google + Facebook lista (popup + fallback redirect).");
+// Versión correcta
