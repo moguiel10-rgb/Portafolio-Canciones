@@ -98,10 +98,9 @@ document.getElementById("btn-google").addEventListener("click", loginWithGoogle)
 getRedirectResult(auth)
   .then((result) => {
     if (result && result.user) {
-      console.log("✅ Usuario autenticado (redirect):", result.user);
-      // 🔁 Redirigir al esquema que abre la app Median
-      window.location.href = "conexionapp://auth?success=true";
-    }
+  console.log("✅ Usuario autenticado (redirect):", result.user);
+  window.location.href = "https://conexion-4-13.firebaseapp.com/auth-redirect.html";
+}
   })
   .catch((error) => {
     if (error && error.message) {
