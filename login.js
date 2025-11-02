@@ -97,7 +97,7 @@ document.getElementById("btn-google").addEventListener("click", loginWithGoogle)
 // 🔁 Procesar resultado del redirect (para WebViews)
 getRedirectResult(auth)
   .then((result) => {
-    if (result && result.user) {
+  if (result && result.user) {
   console.log("✅ Usuario autenticado (redirect):", result.user);
   window.location.href = "https://conexion-4-13.firebaseapp.com/auth-redirect.html";
 }

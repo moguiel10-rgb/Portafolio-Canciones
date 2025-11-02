@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Redirigiendo a la app...</title>
   <script>
-    // Espera 500ms por compatibilidad, luego intenta abrir la app
-    setTimeout(() => {
+    window.onload = function() {
+      // Intenta abrir tu app Median con el esquema personalizado
       window.location.href = "conexionapp://auth?success=true";
-    }, 500);
 
-    // Si por alguna razón no abre la app, muestra enlace manual
-    setTimeout(() => {
-      document.getElementById('fallback').style.display = 'block';
-    }, 2000);
+      // Si el esquema no abre (por ejemplo, en escritorio), muestra enlace
+      setTimeout(() => {
+        document.getElementById("fallback").style.display = "block";
+      }, 2000);
+    };
   </script>
 </head>
-<body style="font-family: sans-serif; text-align:center; margin-top: 40px;">
-  <h3>Redirigiendo a la aplicación...</h3>
+<body style="font-family:sans-serif;text-align:center;padding:50px;">
+  <h2>Redirigiendo a la aplicación...</h2>
   <p id="fallback" style="display:none;">
-    Si no se abre automáticamente, toca aquí:
-    <a href="conexionapp://auth?success=true">Volver a la app</a>
+    Si no se abre automáticamente, <a href="conexionapp://auth?success=true">toca aquí para volver a la app</a>.
   </p>
 </body>
 </html>
