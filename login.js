@@ -1,122 +1,84 @@
-// 🔥 Importar SDKs de Firebase
-import { 
-  initializeApp 
-} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+// -------------------------------------------------------------------
+// 1. INICIALIZACIÓN DE FIREBASE Y PROVEEDORES
+// -------------------------------------------------------------------
+// ASEGÚRATE DE QUE ESTAS VARIABLES ESTÉN DEFINIDAS EN ALGÚN LUGAR DE TU PROYECTO
+// (Normalmente en un archivo de configuración de Firebase que se carga antes de este script)
+// Ejemplo:
+// var providerFacebook = new firebase.auth.FacebookAuthProvider();
+// providerFacebook.addScope('email');
+// var providerGoogle = new firebase.auth.GoogleAuthProvider();
+// -------------------------------------------------------------------
 
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  FacebookAuthProvider,
-  signInWithPopup, 
-  signInWithRedirect,
-  getRedirectResult 
-} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
-import { 
-  getAnalytics 
-} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
+// -------------------------------------------------------------------
+// 2. FUNCIONES DE INICIO DE SESIÓN CON POPUP (SOLUCIÓN MÓVIL)
+// -------------------------------------------------------------------
 
-// 🔧 Configuración de Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyDbzwAI7OGNPSNMXqTDz5vJH1A-gE-VxKs",
-  authDomain: "conexion-4-13.firebaseapp.com",
-  projectId: "conexion-4-13",
-  storageBucket: "conexion-4-13.firebasestorage.app",
-  messagingSenderId: "508766935713",
-  appId: "1:508766935713:web:318bc72eb805de3faceee0",
-  measurementId: "G-HW8K01LJZQ"
-};
+function loginFacebook() {
+    firebase.auth().signInWithPopup(providerFacebook)
+        .then(function(result) {
+            var token = result.credential.accessToken;
+            var user = result.user;
+            
+            console.log("Inicio de sesión con Facebook exitoso:", user);
+            window.location.href = "home.html"; 
 
-// 🚀 Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const analytics = getAnalytics(app);
-
-// 🧭 Detectar si estamos dentro de un WebView
-function isInWebView() {
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  return (
-    ua.includes("wv") ||                      // Android WebView
-    window.ReactNativeWebView ||              // React Native
-    ua.includes("Median") ||                  // WebView de Median
-    window.location.href.startsWith("file://") ||
-    window.location.href.includes("median.run")
-  );
+        })
+        .catch(function(error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.error("Error al iniciar sesión con Facebook:", errorMessage);
+            alert("Error al iniciar sesión con Facebook: " + errorMessage);
+        });
 }
-const inWebView = isInWebView();
-console.log("📱 WebView detectado:", inWebView);
 
-// ✅ Proveedores de autenticación
-const googleProvider = new GoogleAuthProvider();
-const facebookProvider = new FacebookAuthProvider();
+function loginGoogle() {
+    firebase.auth().signInWithPopup(providerGoogle)
+        .then(function(result) {
+            var token = result.credential.accessToken;
+            var user = result.user;
+            
+            console.log("Inicio de sesión con Google exitoso:", user);
+            window.location.href = "home.html"; 
+        })
+        .catch(function(error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.error("Error al iniciar sesión con Google:", errorMessage);
+            alert("Error al iniciar sesión con Google: " + errorMessage);
+        });
+}
 
-// 🔒 Forzar popup en Facebook
-facebookProvider.setCustomParameters({
-  display: 'popup'
+// ... (Añade aquí tus otras funciones de login: loginTwitter, loginGithub, etc.) ...
+
+
+// -------------------------------------------------------------------
+// 3. VERIFICACIÓN DE ESTADO DE AUTENTICACIÓN
+// -------------------------------------------------------------------
+
+firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+        // El usuario está conectado.
+    } else {
+        // El usuario no está conectado.
+    }
 });
 
-// 🧠 Verificar si sessionStorage está disponible (evita error "missing initial state")
-function storageAvailable(type) {
-  try {
-    const storage = window[type];
-    const testKey = '__storage_test__';
-    storage.setItem(testKey, testKey);
-    storage.removeItem(testKey);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
 
-// 🚪 Función genérica para login
-function loginWithProvider(providerName) {
-  let provider;
+// -------------------------------------------------------------------
+// 4. VINCULACIÓN DE BOTONES (SOLUCIÓN BOTONES MÓVILES)
+// -------------------------------------------------------------------
 
-  if (providerName === "google") provider = googleProvider;
-  if (providerName === "facebook") provider = facebookProvider;
+// Esta sección asegura que los botones llamen a las funciones de login.
+document.addEventListener('DOMContentLoaded', function() {
+    const btnGoogle = document.getElementById('btn-google');
+    const btnFacebook = document.getElementById('btn-facebook');
 
-  console.log(`🔐 Iniciando sesión con ${providerName}`);
-
-  if (!storageAvailable('sessionStorage')) {
-    alert("⚠️ Tu navegador o app no permite almacenamiento local. Abre esta página en Chrome o Safari fuera de la app.");
-    return;
-  }
-
-  // 🧭 Si estamos dentro de un WebView, usamos redirect
-  if (inWebView) {
-    console.log("🌐 WebView detectado — usando redirect");
-    signInWithRedirect(auth, provider);
-  } else {
-    // 💨 En navegadores normales, usamos popup
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        console.log(`✅ Usuario autenticado con ${providerName}:`, user);
-        window.location.href = "index.html";
-      })
-      .catch((error) => {
-        console.error(`❌ Error al iniciar sesión con ${providerName}:`, error.message);
-        alert(`Error al iniciar sesión con ${providerName}: ${error.message}`);
-      });
-  }
-}
-
-// 🖱️ Asignar eventos a los botones
-document.getElementById("btn-google").addEventListener("click", () => loginWithProvider("google"));
-document.getElementById("btn-facebook").addEventListener("click", () => loginWithProvider("facebook"));
-
-// 🔁 Procesar resultado del redirect (para WebViews)
-getRedirectResult(auth)
-  .then((result) => {
-    if (result && result.user) {
-      console.log("✅ Usuario autenticado (redirect):", result.user);
-      window.location.href = "index.html";
+    if (btnGoogle) {
+        btnGoogle.addEventListener('click', loginGoogle);
     }
-  })
-  .catch((error) => {
-    if (error && error.message) {
-      console.error("❌ Error al procesar redirect:", error.message);
-    }
-  });
 
-console.log("✅ Autenticación Google + Facebook lista (popup + fallback redirect).");
+    if (btnFacebook) {
+        btnFacebook.addEventListener('click', loginFacebook);
+    }
+});
