@@ -46,24 +46,26 @@ function isInWebView() {
 const inWebView = isInWebView();
 console.log("📱 WebView detectado:", inWebView);
 
+// 🧭 Detectar si es dispositivo móvil
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
 // ✅ Proveedores de autenticación
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
-
-// 🔒 Forzar popup en Facebook
-facebookProvider.setCustomParameters({
-  display: 'popup'
-});
 
 // 🧠 Verificar si sessionStorage está disponible (evita error "missing initial state")
 function storageAvailable(type) {
   try {
     const storage = window[type];
     const testKey = '__storage_test__';
-    storage.setItem(testKey, testKey);
+    storage.setItem(testKey, 'test');
+    const retrieved = storage.getItem(testKey);
     storage.removeItem(testKey);
-    return true;
+    return retrieved === 'test';
   } catch (e) {
+    console.warn(`${type} no disponible:`, e.message);
     return false;
   }
 }
@@ -82,12 +84,19 @@ function loginWithProvider(providerName) {
     return;
   }
 
-  // 🧭 Si estamos dentro de un WebView, usamos redirect
-  if (inWebView) {
-    console.log("🌐 WebView detectado — usando redirect");
-    signInWithRedirect(auth, provider);
+  // 🧭 Detectar si es móvil o WebView
+  const isMobile = isMobileDevice();
+  
+  // 📱 Usar redirect para móviles y WebViews, popup para desktop
+  if (inWebView || isMobile) {
+    console.log("📱 Móvil/WebView detectado — usando redirect");
+    signInWithRedirect(auth, provider)
+      .catch((error) => {
+        console.error(`❌ Error al iniciar redirect con ${providerName}:`, error.message);
+        alert(`Error al iniciar sesión con ${providerName}: ${error.message}`);
+      });
   } else {
-    // 💨 En navegadores normales, usamos popup
+    // 💻 En desktop, usar popup
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
@@ -96,7 +105,13 @@ function loginWithProvider(providerName) {
       })
       .catch((error) => {
         console.error(`❌ Error al iniciar sesión con ${providerName}:`, error.message);
-        alert(`Error al iniciar sesión con ${providerName}: ${error.message}`);
+        
+        // Manejar errores específicos
+        if (error.code === 'auth/account-exists-with-different-credential') {
+          alert("⚠️ Este email ya está registrado con otro método de autenticación. Intenta con Google o email.");
+        } else {
+          alert(`Error al iniciar sesión con ${providerName}: ${error.message}`);
+        }
       });
   }
 }
@@ -105,7 +120,7 @@ function loginWithProvider(providerName) {
 document.getElementById("btn-google").addEventListener("click", () => loginWithProvider("google"));
 document.getElementById("btn-facebook").addEventListener("click", () => loginWithProvider("facebook"));
 
-// 🔁 Procesar resultado del redirect (para WebViews)
+// 🔁 Procesar resultado del redirect (para WebViews y móviles)
 getRedirectResult(auth)
   .then((result) => {
     if (result && result.user) {
@@ -116,8 +131,16 @@ getRedirectResult(auth)
   .catch((error) => {
     if (error && error.message) {
       console.error("❌ Error al procesar redirect:", error.message);
+      
+      // Manejar errores específicos de redirect
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        alert("⚠️ Este email ya está registrado con Google. Usa ese método para iniciar sesión.");
+      } else if (error.code !== 'auth/user-cancelled') {
+        // No mostrar error si el usuario canceló manualmente
+        alert(`Error de autenticación: ${error.message}`);
+      }
     }
   });
 
-console.log("✅ Autenticación Google + Facebook lista (popup + fallback redirect).");
-// Versión correcta
+console.log("✅ Autenticación Google + Facebook lista (popup para desktop, redirect para móviles).");
+console.log("📱 Dispositivo móvil detectado:", isMobileDevice());
