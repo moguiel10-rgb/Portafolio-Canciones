@@ -31,17 +31,18 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
 
-// 🧭 Detectar si estamos dentro de un WebView
+// 🧭 Detectar si estamos dentro de un WebView Median
 function isInWebView() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
   return (
-    ua.includes("wv") ||                      // Android WebView
-    window.ReactNativeWebView ||              // React Native
-    ua.includes("Median") ||                  // WebView de Median
+    ua.includes("wv") || 
+    window.ReactNativeWebView || 
+    ua.includes("Median") || 
     window.location.href.startsWith("file://") ||
     window.location.href.includes("median.run")
   );
 }
+
 const inWebView = isInWebView();
 console.log("📱 WebView detectado:", inWebView);
 
@@ -70,17 +71,18 @@ function loginWithGoogle() {
     return;
   }
 
-  // 🧭 Si estamos dentro de un WebView, usamos redirect
   if (inWebView) {
-    console.log("🌐 WebView detectado — usando redirect");
+    // 🌐 En Median (WebView), usamos redirect
+    console.log("🌐 WebView detectado — usando redirect con Firebase");
     signInWithRedirect(auth, googleProvider);
   } else {
-    // 💨 En navegadores normales, usamos popup
+    // 💨 En navegador normal, popup
     signInWithPopup(auth, googleProvider)
       .then((result) => {
         const user = result.user;
         console.log("✅ Usuario autenticado con Google:", user);
-        window.location.href = "index.html";
+        // 🔁 Redirigir al esquema de Median (deep link)
+        window.location.href = "conexionapp://auth?success=true";
       })
       .catch((error) => {
         console.error("❌ Error al iniciar sesión con Google:", error.message);
@@ -97,7 +99,8 @@ getRedirectResult(auth)
   .then((result) => {
     if (result && result.user) {
       console.log("✅ Usuario autenticado (redirect):", result.user);
-      window.location.href = "index.html";
+      // 🔁 Redirigir al esquema que abre la app Median
+      window.location.href = "conexionapp://auth?success=true";
     }
   })
   .catch((error) => {
