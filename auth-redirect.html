@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirigiendo a la app...</title>
+  <script>
+    // Espera 500ms por compatibilidad, luego intenta abrir la app
+    setTimeout(() => {
+      window.location.href = "conexionapp://auth?success=true";
+    }, 500);
+
+    // Si por alguna razón no abre la app, muestra enlace manual
+    setTimeout(() => {
+      document.getElementById('fallback').style.display = 'block';
+    }, 2000);
+  </script>
+</head>
+<body style="font-family: sans-serif; text-align:center; margin-top: 40px;">
+  <h3>Redirigiendo a la aplicación...</h3>
+  <p id="fallback" style="display:none;">
+    Si no se abre automáticamente, toca aquí:
+    <a href="conexionapp://auth?success=true">Volver a la app</a>
+  </p>
+</body>
+</html>
