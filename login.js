@@ -1,20 +1,14 @@
 // 🔥 Importar SDKs de Firebase
-import { 
-  initializeApp 
-} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { 
   getAuth, 
-  GoogleAuthProvider, 
-  FacebookAuthProvider,
-  signInWithPopup, 
-  signInWithRedirect,
-  getRedirectResult 
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-
-import { 
-  getAnalytics 
-} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
 
 // 🔧 Configuración de Firebase
 const firebaseConfig = {
@@ -31,93 +25,61 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
+const provider = new GoogleAuthProvider();
 
-// 🧭 Detectar si estamos dentro de un WebView
-function isInWebView() {
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  return (
-    ua.includes("wv") ||                      // Android WebView
-    window.ReactNativeWebView ||              // React Native
-    ua.includes("Median") ||                  // WebView de Median
-    window.location.href.startsWith("file://") ||
-    window.location.href.includes("median.run")
-  );
-}
-const inWebView = isInWebView();
-console.log("📱 WebView detectado:", inWebView);
-
-// ✅ Proveedores de autenticación
-const googleProvider = new GoogleAuthProvider();
-const facebookProvider = new FacebookAuthProvider();
-
-// 🔒 Forzar popup en Facebook
-facebookProvider.setCustomParameters({
-  display: 'popup'
+// 🧭 Detectar si ya hay sesión activa
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    window.location.href = "index.html";
+  }
 });
 
-// 🧠 Verificar si sessionStorage está disponible (evita error "missing initial state")
-function storageAvailable(type) {
-  try {
-    const storage = window[type];
-    const testKey = '__storage_test__';
-    storage.setItem(testKey, testKey);
-    storage.removeItem(testKey);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+// 🎛️ Alternar entre login y registro
+let isRegistering = false;
+const btnAuth = document.getElementById('btn-auth');
+const formTitle = document.getElementById('form-title');
+const toggle = document.getElementById('toggle-mode');
 
-// 🚪 Función genérica para login
-function loginWithProvider(providerName) {
-  let provider;
+toggle.addEventListener('click', () => {
+  isRegistering = !isRegistering;
+  formTitle.textContent = isRegistering ? 'Crear cuenta' : 'Iniciar sesión';
+  btnAuth.textContent = isRegistering ? 'Registrarme' : 'Entrar';
+  toggle.innerHTML = isRegistering
+    ? '¿Ya tienes cuenta? <span>Inicia sesión</span>'
+    : '¿No tienes cuenta? <span>Regístrate aquí</span>';
+});
 
-  if (providerName === "google") provider = googleProvider;
-  if (providerName === "facebook") provider = facebookProvider;
+// 🔐 Acción principal (login / registro)
+btnAuth.addEventListener('click', async () => {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
 
-  console.log(`🔐 Iniciando sesión con ${providerName}`);
-
-  if (!storageAvailable('sessionStorage')) {
-    alert("⚠️ Tu navegador o app no permite almacenamiento local. Abre esta página en Chrome o Safari fuera de la app.");
+  if (!email || !password) {
+    alert("Por favor llena todos los campos.");
     return;
   }
 
-  // 🧭 Si estamos dentro de un WebView, usamos redirect
-  if (inWebView) {
-    console.log("🌐 WebView detectado — usando redirect");
-    signInWithRedirect(auth, provider);
-  } else {
-    // 💨 En navegadores normales, usamos popup
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        console.log(`✅ Usuario autenticado con ${providerName}:`, user);
-        window.location.href = "index.html";
-      })
-      .catch((error) => {
-        console.error(`❌ Error al iniciar sesión con ${providerName}:`, error.message);
-        alert(`Error al iniciar sesión con ${providerName}: ${error.message}`);
-      });
+  try {
+    if (isRegistering) {
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("✅ Cuenta creada con éxito. Redirigiendo...");
+    } else {
+      await signInWithEmailAndPassword(auth, email, password);
+      alert("✅ Bienvenido de nuevo.");
+    }
+    window.location.href = "index.html";
+  } catch (error) {
+    alert(`❌ Error: ${error.message}`);
   }
-}
+});
 
-// 🖱️ Asignar eventos a los botones
-document.getElementById("btn-google").addEventListener("click", () => loginWithProvider("google"));
-document.getElementById("btn-facebook").addEventListener("click", () => loginWithProvider("facebook"));
-
-// 🔁 Procesar resultado del redirect (para WebViews)
-getRedirectResult(auth)
-  .then((result) => {
-    if (result && result.user) {
-      console.log("✅ Usuario autenticado (redirect):", result.user);
-      window.location.href = "index.html";
-    }
-  })
-  .catch((error) => {
-    if (error && error.message) {
-      console.error("❌ Error al procesar redirect:", error.message);
-    }
-  });
-
-console.log("✅ Autenticación Google + Facebook lista (popup + fallback redirect).");
-// Versión correcta
+// 🔵 Login con Google
+document.getElementById('btn-google').addEventListener('click', async () => {
+  try {
+    await signInWithPopup(auth, provider);
+    alert("✅ Inicio de sesión con Google exitoso.");
+    window.location.href = "index.html";
+  } catch (error) {
+    alert(`❌ Error con Google: ${error.message}`);
+  }
+});

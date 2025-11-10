@@ -1,103 +1,148 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login con Google</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conexione - Iniciar sesión</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="login.css" />
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, #1a237e, #283593, #3949ab);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: white;
       margin: 0;
       padding: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-size: cover;
-      background-position: center;
-      background-image: url('Imagenes/alfombra.jpg');
-      background-color: #fdfafa;
     }
 
-    .login-container {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(8px);
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
       border-radius: 20px;
-      padding: 40px 50px;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      max-width: 350px;
+      padding: 2rem;
       width: 90%;
-      animation: fadeIn 0.8s ease;
+      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 1s ease-in-out;
     }
 
-    .login-container h1 {
-      font-size: 24px;
-      color: #333;
-      margin-bottom: 10px;
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 0.5rem 0;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 1rem;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ff8a00, #ffca28);
+      color: #fff;
+      font-size: 1rem;
       font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
 
-    .login-container p {
-      color: #666;
-      margin-bottom: 30px;
-      font-size: 15px;
+    button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #ffb300, #ffd54f);
     }
 
-    .btn {
+    #btn-google {
+      background: #fff;
+      color: #444;
+      margin-top: 1rem;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      border-radius: 10px;
-      padding: 12px 25px;
-      font-size: 16px;
       font-weight: 600;
-      cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-      width: 100%;
-      margin-bottom: 15px;
     }
 
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    #btn-google img {
+      width: 20px;
+      height: 20px;
     }
 
-    .google-btn {
-      background-color: #ffffff;
-      color: #444;
-      border: 1px solid #ddd;
+    #btn-google:hover {
+      transform: scale(1.05);
+      background: #f1f1f1;
     }
 
-    .google-icon {
-      width: 26px;
-      height: 26px;
+    .toggle {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #ddd;
+    }
+
+    .toggle span {
+      color: #ffca28;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .fade {
+      opacity: 0;
+      transition: opacity 0.5s;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <h1>¡Bienvenido!</h1>
-    <p>Accede fácilmente con tu cuenta</p>
+  <div class="container" id="auth-container">
+    <h2 id="form-title">Iniciar sesión</h2>
 
-    <!-- Botón Google -->
-    <button id="btn-google" class="btn google-btn">
-      <img 
-        class="google-icon" 
-        src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
-        alt="Google icon">
-      Continuar con Google
+    <input type="email" id="email" placeholder="Correo electrónico" required />
+    <input type="password" id="password" placeholder="Contraseña" required />
+
+    <button id="btn-auth">Entrar</button>
+
+    <!-- Botón de Google -->
+    <button id="btn-google">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+      Iniciar sesión con Google
     </button>
+
+    <div class="toggle" id="toggle-mode">
+      ¿No tienes cuenta? <span>Regístrate aquí</span>
+    </div>
   </div>
 
-  <!-- Tu script -->
   <script type="module" src="login.js"></script>
 </body>
 </html>
