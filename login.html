@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Conexione - Iniciar sesión</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-XxqH/1n8HGr1PpZFnKZP2vW9Z2Ix+u9pQzqXX2UCBg3eHc2W7zOx1V8rbZJ14sHgC8byzIRJd6oqfHVkA7jJ0A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     body {
       font-family: 'Outfit', sans-serif;
@@ -38,10 +37,14 @@
       color: #fff;
     }
 
+    .input-group {
+      position: relative;
+      margin: 0.5rem 0;
+    }
+
     input {
       width: 100%;
-      padding: 12px;
-      margin: 0.5rem 0;
+      padding: 12px 40px 12px 12px;
       border: none;
       border-radius: 10px;
       outline: none;
@@ -49,13 +52,29 @@
     }
 
     input[type="email"],
-    input[type="password"] {
+    input[type="password"],
+    input[type="text"] {
       background: rgba(255, 255, 255, 0.2);
       color: #fff;
     }
 
     input::placeholder {
       color: rgba(255, 255, 255, 0.7);
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      user-select: none;
+      color: rgba(255, 255, 255, 0.7);
+      transition: color 0.3s ease;
+    }
+
+    .toggle-password:hover {
+      color: #ffca28;
     }
 
     button {
@@ -112,11 +131,6 @@
       font-weight: 600;
     }
 
-    .fade {
-      opacity: 0;
-      transition: opacity 0.5s;
-    }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -128,11 +142,14 @@
     <h2 id="form-title">Iniciar sesión</h2>
 
     <input type="email" id="email" placeholder="Correo electrónico" required />
-    <input type="password" id="password" placeholder="Contraseña" required />
+
+    <div class="input-group">
+      <input type="password" id="password" placeholder="Contraseña" required />
+      <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+    </div>
 
     <button id="btn-auth">Entrar</button>
 
-    <!-- Botón de Google -->
     <button id="btn-google">
       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
       Iniciar sesión con Google
@@ -143,6 +160,16 @@
     </div>
   </div>
 
-  <script type="module" src="login.js"></script>
+  <script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    togglePassword.addEventListener('click', () => {
+      const isPassword = passwordInput.getAttribute('type') === 'password';
+      passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+      togglePassword.classList.toggle('fa-eye');
+      togglePassword.classList.toggle('fa-eye-slash');
+    });
+  </script>
 </body>
 </html>
