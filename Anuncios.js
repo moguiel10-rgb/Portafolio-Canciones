@@ -1,59 +1,57 @@
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof median !== "undefined" && median.admob) {
-    console.log("AdMob disponible desde Median ✅");
+    console.log("AdMob conectado correctamente ✅");
 
-    // Mostrar banner automáticamente
+    // Mostrar banner al cargar
     try {
       median.admob.banner.enable();
     } catch (err) {
-      console.warn("No se pudo mostrar el banner:", err);
+      console.warn("Error mostrando banner:", err);
     }
 
-    // Solicitar consentimiento (opcional)
+    // Consentimiento (opcional)
     if (median.admob.request && median.admob.request.consent) {
-      median.admob.request.consent().then((result) => {
-        if (result.success) {
-          console.log("Consentimiento otorgado para anuncios personalizados.");
-        }
+      median.admob.request.consent().then((r) => {
+        if (r.success) console.log("Consentimiento para anuncios: OK");
       });
     }
 
-    // 🔥 Contador de clics y control de tiempo entre anuncios
+    // 🔥 Nuevo contador de clics
     let clickCount = 0;
-    let canShowAd = true; // Controla si se puede mostrar otro anuncio
+    let canShowAd = true;
 
-    document.addEventListener("click", function (event) {
-      const target = event.target;
+    // Selecciona los botones relevantes de tu app
+    const botones = document.querySelectorAll("button, a");
 
-      // Solo cuenta clics en botones o enlaces
-      if (target.tagName === "BUTTON" || target.tagName === "A") {
+    botones.forEach((btn) => {
+      btn.addEventListener("click", function (e) {
         clickCount++;
-        console.log("Clic válido número:", clickCount);
+        console.log("👉 Clic detectado (" + clickCount + ")");
 
+        // Si llega a 3 clics y se puede mostrar
         if (clickCount >= 3 && canShowAd) {
+          clickCount = 0; // Reiniciar contador
+          canShowAd = false; // Bloquear por 5 segundos
           showInterstitialAd();
-          clickCount = 0;
-          canShowAd = false; // Desactivar anuncios por 5 segundos
-          console.log("⏳ Esperando 5 segundos antes del siguiente anuncio...");
 
           setTimeout(() => {
             canShowAd = true;
-            console.log("✅ Ahora se puede mostrar otro anuncio.");
+            console.log("🟢 Listo para mostrar otro anuncio");
           }, 5000);
         }
-      }
+      });
     });
   } else {
-    console.log("AdMob no disponible (probablemente estás en el navegador)");
+    console.log("No se detectó AdMob (solo navegador).");
   }
 });
 
-// Función para mostrar el interstitial
+// Mostrar el interstitial
 function showInterstitialAd() {
   if (typeof median !== "undefined" && median.admob) {
-    console.log("🟡 Mostrando anuncio interstitial...");
+    console.log("🟡 Intentando mostrar anuncio interstitial...");
     median.admob.showInterstitialIfReady();
   } else {
-    console.log("No se puede mostrar interstitial: fuera de Median");
+    console.warn("❌ No se puede mostrar: fuera de Median.");
   }
 }
