@@ -1,57 +1,41 @@
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof median !== "undefined" && median.admob) {
-    console.log("AdMob conectado correctamente ✅");
+    console.log("✅ AdMob listo en Median");
 
     // Mostrar banner al cargar
     try {
       median.admob.banner.enable();
     } catch (err) {
-      console.warn("Error mostrando banner:", err);
+      console.warn("⚠️ Error mostrando banner:", err);
     }
 
-    // Consentimiento (opcional)
+    // Solicitar consentimiento (si aplica)
     if (median.admob.request && median.admob.request.consent) {
       median.admob.request.consent().then((r) => {
-        if (r.success) console.log("Consentimiento para anuncios: OK");
+        if (r.success) console.log("Consentimiento otorgado ✅");
       });
     }
 
-    // 🔥 Nuevo contador de clics
-    let clickCount = 0;
-    let canShowAd = true;
+    // 🕒 Programar anuncios interstitial en intervalos específicos
+    const tiempos = [15, 45, 60, 110]; // segundos (ajústalos a gusto)
 
-    // Selecciona los botones relevantes de tu app
-    const botones = document.querySelectorAll("button, a");
-
-    botones.forEach((btn) => {
-      btn.addEventListener("click", function (e) {
-        clickCount++;
-        console.log("👉 Clic detectado (" + clickCount + ")");
-
-        // Si llega a 3 clics y se puede mostrar
-        if (clickCount >= 3 && canShowAd) {
-          clickCount = 0; // Reiniciar contador
-          canShowAd = false; // Bloquear por 5 segundos
-          showInterstitialAd();
-
-          setTimeout(() => {
-            canShowAd = true;
-            console.log("🟢 Listo para mostrar otro anuncio");
-          }, 5000);
-        }
-      });
+    tiempos.forEach((t, i) => {
+      setTimeout(() => {
+        console.log(`🟡 Mostrando anuncio interstitial #${i + 1} (a los ${t}s)`);
+        showInterstitialAd();
+      }, t * 1000);
     });
+
   } else {
-    console.log("No se detectó AdMob (solo navegador).");
+    console.log("❌ AdMob no detectado (solo navegador).");
   }
 });
 
-// Mostrar el interstitial
+// Mostrar el interstitial si está listo
 function showInterstitialAd() {
   if (typeof median !== "undefined" && median.admob) {
-    console.log("🟡 Intentando mostrar anuncio interstitial...");
     median.admob.showInterstitialIfReady();
   } else {
-    console.warn("❌ No se puede mostrar: fuera de Median.");
+    console.warn("⚠️ Median no disponible (modo web).");
   }
 }
