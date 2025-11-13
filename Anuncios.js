@@ -1,89 +1,68 @@
+// Anuncios.js
+
+// Objeto para gestionar el estado de los anuncios
+const adManager = {
+  isReady: false, // ¿Hay un anuncio cargado y listo?
+  actionsSinceLastAd: 0, // Contador de acciones del usuario
+  actionsThreshold: 3, // Cuántas acciones para mostrar un anuncio (ajústalo a tu gusto)
+
+  // Carga un anuncio en segundo plano
+  load: function() {
+    if (typeof median !== 'undefined' && median.admob) {
+      console.log("🔄 Cargando un nuevo anuncio intersticial...");
+      this.isReady = false; // Marcar como no listo mientras carga
+      median.admob.interstitial.load()
+        .then(result => {
+          if (result.success) {
+            this.isReady = true;
+            console.log("✅ Anuncio intersticial cargado y listo.");
+          } else {
+            console.warn("⚠️ No se pudo cargar el anuncio intersticial:", result.message);
+          }
+        })
+        .catch(err => console.error("💥 Error crítico al cargar el intersticial:", err));
+    }
+  },
+
+  // Intenta mostrar un anuncio si está listo
+  show: function() {
+    if (this.isReady && typeof median !== 'undefined' && median.admob) {
+      console.log("🟢 Mostrando anuncio intersticial...");
+      median.admob.showInterstitialIfReady(); // No necesitamos el .then() aquí
+      this.isReady = false; // El anuncio se ha usado, ya no está listo
+      this.actionsSinceLastAd = 0; // Reiniciar contador
+      this.load(); // Cargar el siguiente inmediatamente
+      return true;
+    }
+    console.log("🔴 El anuncio no estaba listo para mostrarse.");
+    return false;
+  },
+
+  // Registra una acción del usuario y decide si mostrar un anuncio
+  registerActionAndShowAd: function() {
+    this.actionsSinceLastAd++;
+    console.log(`Acciones desde el último anuncio: ${this.actionsSinceLastAd}`);
+    if (this.actionsSinceLastAd >= this.actionsThreshold) {
+      this.show();
+    }
+  }
+};
+
+// Inicialización cuando la app carga
 document.addEventListener("DOMContentLoaded", function () {
-  // Verificar si la API de Median y AdMob están disponibles
-  if (typeof median !== "undefined" && median.admob) {
+  if (typeof median !== 'undefined' && median.admob) {
     console.log("✅ AdMob listo en Median");
 
-    // 1. Habilitar el anuncio de banner
+    // Habilitar banner
     try {
       median.admob.banner.enable();
-      console.log("Banner habilitado correctamente.");
     } catch (err) {
       console.warn("⚠️ Error al mostrar el banner:", err);
     }
-
-    // 2. Solicitar consentimiento de usuario (si es necesario)
-    if (median.admob.request && median.admob.request.consent) {
-      median.admob.request.consent().then((r) => {
-        if (r.success) {
-          console.log("Consentimiento otorgado ✅");
-        } else {
-          console.warn("Consentimiento no otorgado o no requerido.");
-        }
-      });
-    }
-
-    // 3. Cargar el primer anuncio intersticial inmediatamente
-    // Esto es crucial para que el primer temporizador tenga un anuncio que mostrar.
-    loadInterstitialAd();
-
-    // 4. Programar los anuncios en intervalos de tiempo
-    const tiempos = [15, 45, 60, 110]; // Tiempos en segundos
-
-    tiempos.forEach((t, i) => {
-      setTimeout(() => {
-        console.log(`🟡 Intentando mostrar anuncio #${i + 1} (a los ${t}s)`);
-        showInterstitialAd();
-      }, t * 1000);
-    });
-
+    
+    // Cargar el primer anuncio intersticial
+    adManager.load();
   } else {
-    console.log("❌ AdMob no detectado. Se asume ejecución en navegador web.");
+    console.log("❌ AdMob no detectado (solo navegador).");
   }
 });
-
-/**
- * Función para CARGAR un anuncio intersticial en segundo plano.
- */
-function loadInterstitialAd() {
-  if (typeof median !== "undefined" && median.admob) {
-    console.log("🔄 Cargando un nuevo anuncio intersticial...");
-    median.admob.interstitial.load()
-      .then(result => {
-        if (result.success) {
-          console.log("✅ Anuncio intersticial cargado y listo para mostrar.");
-        } else {
-          console.warn("⚠️ No se pudo cargar el anuncio intersticial:", result.message);
-        }
-      })
-      .catch(err => {
-        console.error("💥 Error crítico al cargar el intersticial:", err);
-      });
-  }
-}
-
-/**
- * Función para MOSTRAR un anuncio intersticial si está listo.
- * Después de mostrarlo, inmediatamente carga el siguiente.
- */
-function showInterstitialAd() {
-  if (typeof median !== "undefined" && median.admob) {
-    median.admob.showInterstitialIfReady()
-      .then(result => {
-        if (result.success) {
-          console.log("🟢 Anuncio intersticial mostrado con éxito.");
-        } else {
-          console.log("🔴 El anuncio no estaba listo para mostrarse. Mensaje:", result.message);
-        }
-        // IMPORTANTE: Ya sea que se haya mostrado o no, intentamos cargar el siguiente.
-        // Esto asegura que para el próximo intervalo, haya un anuncio preparado.
-        loadInterstitialAd();
-      })
-      .catch(err => {
-        console.error("💥 Error crítico al mostrar el intersticial:", err);
-        // Incluso si hay un error, intentamos recuperarnos cargando el siguiente.
-        loadInterstitialAd();
-      });
-  } else {
-    console.warn("⚠️ Median no disponible (modo web). No se puede mostrar el anuncio.");
-  }
-}
