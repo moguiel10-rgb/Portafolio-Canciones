@@ -104,6 +104,7 @@ function onAdButtonClick() {
 
     if (!interstitialLoaded) {
         console.log("🚫 Interstitial no listo, cargando...");
+        disableAdButton(); // Deshabilitar mientras se carga
         loadInterstitial();
         return;
     }
