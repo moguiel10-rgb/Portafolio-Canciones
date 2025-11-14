@@ -1,154 +1,160 @@
-// Anuncios.js - Control de anuncios para Debbie App
+// Anuncios.js - Versión Mejorada con más logs y retraso
 document.addEventListener("DOMContentLoaded", function () {
     console.log("🚀 Inicializando sistema de anuncios...");
 
-    // Verificar si la API de Median y AdMob están disponibles
-    if (typeof median !== "undefined" && median.admob) {
-        console.log("✅ AdMob detectado en Median");
+    // Función para inicializar anuncios
+    function initAds() {
+        console.log("🔍 Verificando disponibilidad de Median AdMob...");
+        console.log("median:", typeof median !== "undefined" ? median : "NO DEFINIDO");
+        console.log("median.admob:", median && median.admob ? "DISPONIBLE" : "NO DISPONIBLE");
 
-        // Variables de control
-        let interstitialAdReady = false;
-        let isShowingAd = false;
+        if (typeof median !== "undefined" && median.admob) {
+            console.log("✅ Median AdMob detectado - MODO PRODUCCIÓN");
 
-        // 1. INICIAR BANNER (anuncio de abajo)
-        try {
-            median.admob.banner.enable();
-            console.log("✅ Banner inferior activado");
-        } catch (err) {
-            console.warn("⚠️ Error al activar banner:", err);
-        }
+            let interstitialLoaded = false;
+            let isShowingAd = false;
 
-        // 2. CARGAR ANUNCIO INTERSTICIAL (pantalla completa)
-        function loadInterstitialAd() {
-            console.log("🔄 Cargando anuncio de pantalla completa...");
-            interstitialAdReady = false;
-            
-            median.admob.interstitial.load()
-                .then(result => {
-                    if (result.success) {
-                        interstitialAdReady = true;
-                        console.log("✅ Anuncio de pantalla completa listo");
-                    } else {
-                        console.warn("⚠️ No se pudo cargar el anuncio:", result.message);
-                        // Reintentar en 30 segundos si falla
-                        setTimeout(loadInterstitialAd, 30000);
-                    }
-                })
-                .catch(err => {
-                    console.error("💥 Error al cargar anuncio:", err);
-                    setTimeout(loadInterstitialAd, 30000);
-                });
-        }
+            // 1. ACTIVAR BANNER INFERIOR
+            try {
+                median.admob.banner.enable();
+                console.log("✅ Banner inferior activado");
+            } catch (err) {
+                console.error("❌ Error activando banner:", err);
+            }
 
-        // Cargar primer anuncio
-        loadInterstitialAd();
-
-        // 3. CONFIGURAR BOTÓN "VER ANUNCIO"
-        const showAdButton = document.getElementById('show-ad-button');
-        
-        if (showAdButton) {
-            showAdButton.addEventListener('click', function() {
-                console.log("🎯 Usuario hizo clic en 'Ver Anuncio'");
+            // 2. CARGAR ANUNCIO INTERSTICIAL
+            function loadInterstitial() {
+                console.log("🔄 Cargando anuncio intersticial...");
                 
-                if (!interstitialAdReady) {
-                    console.log("⏳ Anuncio no está listo, cargando...");
-                    showAdButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
-                    showAdButton.disabled = true;
+                median.admob.interstitial.load()
+                    .then(result => {
+                        if (result.success) {
+                            interstitialLoaded = true;
+                            console.log("✅ Intersticial cargado - LISTO para mostrar");
+                        } else {
+                            console.warn("⚠️ Intersticial no cargado:", result.message);
+                            // Reintentar en 20 segundos
+                            setTimeout(loadInterstitial, 20000);
+                        }
+                    })
+                    .catch(err => {
+                        console.error("💥 Error cargando intersticial:", err);
+                        setTimeout(loadInterstitial, 20000);
+                    });
+            }
+
+            // Cargar primer anuncio
+            loadInterstitial();
+
+            // 3. MANEJAR CLIC EN EL BOTÓN
+            const adButton = document.getElementById('show-ad-button');
+            
+            if (adButton) {
+                adButton.addEventListener('click', function() {
+                    console.log("🎯 Clic en Ver Anuncio");
                     
-                    // Intentar cargar y luego mostrar
-                    median.admob.interstitial.load()
-                        .then(result => {
-                            if (result.success) {
-                                showInterstitialAd();
-                            } else {
-                                alert("Anuncio no disponible en este momento. Intenta más tarde.");
+                    if (isShowingAd) {
+                        console.log("⏳ Ya se está mostrando un anuncio");
+                        return;
+                    }
+
+                    if (interstitialLoaded) {
+                        showInterstitialAd();
+                    } else {
+                        console.log("⏳ Anuncio no cargado, intentando cargar...");
+                        adButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
+                        adButton.disabled = true;
+                        
+                        // Forzar carga y mostrar
+                        median.admob.interstitial.load()
+                            .then(result => {
+                                if (result.success) {
+                                    showInterstitialAd();
+                                } else {
+                                    alert("Anuncio no disponible. Intenta más tarde.");
+                                    resetButton();
+                                }
+                            })
+                            .catch(() => {
+                                alert("Error cargando anuncio.");
                                 resetButton();
-                            }
-                        })
-                        .catch(() => {
-                            alert("Error al cargar el anuncio.");
-                            resetButton();
-                        });
-                    return;
-                }
-                
-                showInterstitialAd();
-            });
-        }
-
-        // Función para mostrar anuncio intersticial
-        function showInterstitialAd() {
-            if (isShowingAd) return;
-            
-            isShowingAd = true;
-            console.log("📱 Mostrando anuncio de pantalla completa...");
-            
-            median.admob.showInterstitialIfReady()
-                .then(result => {
-                    if (result.success) {
-                        console.log("🎉 Anuncio mostrado exitosamente");
-                        // El anuncio se muestra, se recarga automáticamente después de cerrarse
-                    } else {
-                        console.log("❌ Anuncio no se pudo mostrar");
+                            });
                     }
-                    
-                    // Recargar anuncio para próxima vez
-                    setTimeout(() => {
-                        loadInterstitialAd();
+                });
+            }
+
+            function showInterstitialAd() {
+                console.log("📱 Mostrando anuncio intersticial...");
+                isShowingAd = true;
+                
+                median.admob.showInterstitialIfReady()
+                    .then(result => {
+                        console.log("📢 Resultado del anuncio:", result);
+                        
+                        if (result.success) {
+                            console.log("🎉 Anuncio mostrado exitosamente");
+                            // El anuncio se cierra automáticamente
+                        } else {
+                            console.log("❌ No se pudo mostrar el anuncio");
+                        }
+                        
+                        // Recargar para próxima vez
+                        setTimeout(() => {
+                            interstitialLoaded = false;
+                            isShowingAd = false;
+                            resetButton();
+                            loadInterstitial();
+                            console.log("🔄 Reiniciando sistema de anuncios");
+                        }, 3000);
+                        
+                    })
+                    .catch(error => {
+                        console.error("💥 Error mostrando anuncio:", error);
                         isShowingAd = false;
                         resetButton();
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error("💥 Error al mostrar anuncio:", err);
-                    isShowingAd = false;
-                    resetButton();
-                    loadInterstitialAd();
+                        loadInterstitial();
+                    });
+            }
+
+            function resetButton() {
+                const button = document.getElementById('show-ad-button');
+                if (button) {
+                    button.innerHTML = '<i class="fas fa-play-circle"></i> Ver Anuncio';
+                    button.disabled = false;
+                }
+            }
+
+        } else {
+            // MODO DESARROLLO/PRUEBAS
+            console.log("🔧 Modo desarrollo - AdMob no disponible");
+            
+            const adButton = document.getElementById('show-ad-button');
+            
+            if (adButton) {
+                adButton.addEventListener('click', function() {
+                    console.log("🎯 [MODO PRUEBA] Botón clickeado");
+                    
+                    // Simular mejor el comportamiento real
+                    adButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mostrando anuncio...';
+                    adButton.disabled = true;
+                    
+                    setTimeout(() => {
+                        alert("🎉 ¡Anuncio de prueba!\n\nEn la app real de Median, aquí verías un anuncio de AdMob con video que dice 'Nice Job' o similar.\n\nPara ver anuncios reales, compila tu app en Median con los IDs de AdMob configurados.");
+                        resetDevButton();
+                    }, 1500);
                 });
-        }
-
-        // Función para resetear el botón
-        function resetButton() {
-            if (showAdButton) {
-                showAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Ver Anuncio';
-                showAdButton.disabled = false;
+            }
+            
+            function resetDevButton() {
+                const button = document.getElementById('show-ad-button');
+                if (button) {
+                    button.innerHTML = '<i class="fas fa-play-circle"></i> Ver Anuncio';
+                    button.disabled = false;
+                }
             }
         }
-
-        // 4. MANEJO DE VISIBILIDAD DE LA APP
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden && !interstitialAdReady) {
-                // Si la app vuelve a primer plano y no hay anuncio listo, cargar uno
-                loadInterstitialAd();
-            }
-        });
-
-    } else {
-        // MODO DESARROLLO - Simular comportamiento cuando no hay AdMob
-        console.log("🔧 Modo desarrollo: AdMob no detectado");
-        
-        const showAdButton = document.getElementById('show-ad-button');
-        
-        if (showAdButton) {
-            showAdButton.addEventListener('click', function() {
-                console.log("🎯 [DEV] Botón de anuncio clickeado");
-                alert("🎉 En producción, aquí se mostraría un anuncio de pantalla completa.\n\n¡Anuncio simulado exitoso!");
-                
-                // Simular carga de nuevo anuncio después de 2 segundos
-                showAdButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
-                showAdButton.disabled = true;
-                
-                setTimeout(() => {
-                    showAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Ver Anuncio';
-                    showAdButton.disabled = false;
-                    console.log("✅ [DEV] Anuncio simulado completado");
-                }, 2000);
-            });
-        }
-        
-        // Simular banner en desarrollo
-        console.log("📱 [DEV] Banner inferior simulado");
     }
 
-    console.log("🎊 Sistema de anuncios inicializado correctamente");
+    // Dar un poco de tiempo para que Median inicialice
+    setTimeout(initAds, 1000);
 });
