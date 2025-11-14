@@ -1,112 +1,136 @@
-// Estado del sistema
+// ========================================================
+//   VARIABLES GLOBALES
+// ========================================================
 let interstitialLoaded = false;
 let isShowingAd = false;
 
-// Inicializar Ads cuando Median está listo
+// ========================================================
+//   ESPERAR AL DEVICEREADY
+// ========================================================
 document.addEventListener("deviceready", () => {
-    console.log("📱 Device ready. Iniciando AdMob...");
-    initializeAds();
+    console.log("📱 Device ready");
+    
+    registerMedianEvents();
+    loadInterstitial();
+
+    // Activar listener del botón
+    document.getElementById("show-ad-button").addEventListener("click", onAdButtonClick);
 });
 
-// Inicializar AdMob
-function initializeAds() {
-    median.admob.initialize()
-        .then(() => {
-            console.log("🎉 AdMob inicializado");
-            loadBanner();
-            loadInterstitial();
-        })
-        .catch(err => {
-            console.error("💥 Error al inicializar AdMob:", err);
-        });
+// ========================================================
+//   EVENTOS DEL SDK MEDIAN + ADMOB
+// ========================================================
+function registerMedianEvents() {
+
+    // Cuando el interstitial realmente se cargó
+    median.on("admob.interstitial.load", () => {
+        console.log("📥 Interstitial LISTO para mostrarse");
+        interstitialLoaded = true;
+        enableAdButton();
+    });
+
+    // Si falla la carga
+    median.on("admob.interstitial.loadfail", (err) => {
+        console.warn("❌ Falló la carga del interstitial:", err);
+        interstitialLoaded = false;
+        enableAdButton(); 
+    });
+
+    // Cuando se muestra
+    median.on("admob.interstitial.show", () => {
+        console.log("🎬 Interstitial MOSTRADO");
+        isShowingAd = true;
+    });
+
+    // Cuando se cierra
+    median.on("admob.interstitial.dismiss", () => {
+        console.log("👋 Interstitial CERRADO");
+
+        isShowingAd = false;
+        interstitialLoaded = false;
+
+        // Cargar el siguiente anuncio
+        loadInterstitial();
+
+        // Restaurar botón
+        resetAdButton();
+    });
+
 }
 
-// -------------------------
-// BANNER
-// -------------------------
-function loadBanner() {
-    median.admob.banner.show()
-        .then(() => console.log("📢 Banner mostrado"))
-        .catch(err => console.error("💥 Error al mostrar banner:", err));
-}
-
-// -------------------------
-// INTERSTITIAL
-// -------------------------
-
-// Cargar interstitial
+// ========================================================
+//   CARGAR INTERSTITIAL
+// ========================================================
 function loadInterstitial() {
-    console.log("🔄 Cargando intersticial...");
+    console.log("🔄 Solicitando anuncio interstitial...");
 
     median.admob.interstitial.load()
         .then(() => {
-            console.log("👍 Interstitial cargado");
-            interstitialLoaded = true;
+            console.log("📨 Petición enviada. Esperando evento 'load'.");
         })
-        .catch(err => {
-            console.error("💥 Error cargando interstitial:", err);
+        .catch((err) => {
+            console.error("❌ Error al solicitar anuncio:", err);
             interstitialLoaded = false;
+            enableAdButton();
         });
 }
 
-// Mostrar interstitial
+// ========================================================
+//   MOSTRAR INTERSTITIAL
+// ========================================================
 function showInterstitialAd() {
     if (!interstitialLoaded) {
-        console.warn("⚠ Interstitial no está listo aún");
+        console.log("⚠ No se puede mostrar: aún no está cargado.");
+        enableAdButton();
         return;
     }
 
-    if (isShowingAd) {
-        console.warn("⏳ Ya se está mostrando un anuncio");
-        return;
-    }
-
-    console.log("📱 Mostrando intersticial...");
-    isShowingAd = true;
+    console.log("🎬 Intentando mostrar interstitial...");
 
     median.admob.interstitial.show()
-        .then(result => {
-            console.log("📢 Resultado del anuncio:", result);
-
-            setTimeout(() => {
-                interstitialLoaded = false;
-                isShowingAd = false;
-                resetButton();
-                loadInterstitial();
-                console.log("🔄 Sistema de anuncios reiniciado");
-            }, 2000);
-        })
-        .catch(error => {
-            console.error("💥 Error mostrando anuncio:", error);
-            isShowingAd = false;
-            resetButton();
+        .catch((err) => {
+            console.error("❌ Error al mostrar el anuncio:", err);
+            interstitialLoaded = false;
+            resetAdButton();
             loadInterstitial();
         });
 }
 
-// -------------------------
-// BOTÓN
-// -------------------------
+// ========================================================
+//   LÓGICA DEL BOTÓN
+// ========================================================
 function onAdButtonClick() {
     console.log("👆 Botón presionado");
 
-    disableButton();
-
-    if (interstitialLoaded) {
-        showInterstitialAd();
-    } else {
-        console.log("🚫 No hay interstitial listo, cargando de nuevo...");
+    if (!interstitialLoaded) {
+        console.log("🚫 Interstitial no listo, cargando...");
         loadInterstitial();
-        resetButton();
+        return;
     }
+
+    disableAdButton();
+    showInterstitialAd();
 }
 
-function disableButton() {
-    const btn = document.getElementById("adButton");
-    if (btn) btn.disabled = true;
+// DESACTIVAR BOTÓN
+function disableAdButton() {
+    const btn = document.getElementById("show-ad-button");
+    btn.disabled = true;
+    btn.style.opacity = "0.6";
+    btn.style.cursor = "not-allowed";
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
 }
 
-function resetButton() {
-    const btn = document.getElementById("adButton");
-    if (btn) btn.disabled = false;
+// ACTIVAR BOTÓN
+function enableAdButton() {
+    const btn = document.getElementById("show-ad-button");
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.style.cursor = "pointer";
+    btn.innerHTML = '<i class="fas fa-play-circle"></i> Ver Anuncio';
+}
+
+// RESTAURAR BOTÓN
+function resetAdButton() {
+    enableAdButton();
 }
