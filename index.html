@@ -505,6 +505,29 @@
         <h2 class="titulo-final">&copy; 2025 Conexión 4:13 | Todos los derechos reservados</h2>
 <div style="text-align: center; margin-top: 20px;">
     </div>
+    <!-- boton ver anuncio -->
+<div style="text-align: center; margin-top: 30px; padding: 20px;">
+    <button id="show-ad-button" style="
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.1em;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: bold;
+    ">
+        <i class="fas fa-play-circle"></i> Ver Anuncio
+    </button>
+    <p style="color: rgba(255,255,255,0.7); margin-top: 10px; font-size: 0.9em;">
+        Apoya nuestra app viendo un breve anuncio
+    </p>
+</div>
     </footer>
         <!-- 1. Asegúrate de que el modal de imagen esté presente si tu Acordes.js lo necesita -->
     <!-- Si ya tienes el modal en tu HTML, puedes omitir este div -->
@@ -588,20 +611,5 @@
     <!-- 4. Tu script principal debe ser el último en cargarse -->
     <script src="Acordes.js"></script>
     <script src="Anuncios.js"></script>
-    <!-- ================================================== -->
-<!--         INICIO: OVERLAY PARA VER ANUNCIO           -->
-<!-- ================================================== -->
-<div id="ad-overlay" class="ad-overlay-hidden">
-    <div class="ad-overlay-content">
-        <h2>¡Apoya la App!</h2>
-        <p>Para continuar, por favor mira un breve anuncio. ¡Gracias por tu apoyo!</p>
-        <button id="show-ad-button">
-            <i class="fas fa-play-circle"></i> Ver Anuncio
-        </button>
-    </div>
-</div>
-<!-- ================================================== -->
-<!--          FIN: OVERLAY PARA VER ANUNCIO             -->
-<!-- ================================================== -->
 </body>
 </html>
