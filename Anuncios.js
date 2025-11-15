@@ -1,40 +1,47 @@
-// Anuncios.js - VERSIÓN SIMPLE
-document.addEventListener("deviceready", function() {
-    // Configurar el interstitial
-    median.admob.interstitial.config({
-        id: 'ca-app-pub-3940256099942544/1033173712'
-    });
+document.addEventListener("deviceready", function () {
 
-    // Cargar el interstitial al iniciar
+    console.log("Device ready");
+
+    // Configurar interstitial (solo por si acaso)
+    if (median && median.admob && median.admob.interstitial && median.admob.interstitial.config) {
+        median.admob.interstitial.config({
+            id: "ca-app-pub-3940256099942544/1033173712" // ID de prueba
+        });
+    }
+
+    // Cargar anuncio al inicio
+    console.log("Cargando interstitial...");
     median.admob.interstitial.load();
 
-    // Cuando el interstitial está listo
-    median.on("admob.interstitial.loaded", function() {
-        console.log("Interstitial cargado y listo");
-        document.getElementById("show-ad-button").disabled = false;
+    // Evento cuando se cargó
+    median.on("admob.interstitial.loaded", function () {
+        console.log("✔ Interstitial LISTO");
     });
 
-    // Cuando falla la carga
-    median.on("admob.interstitial.failedToLoad", function() {
-        console.log("Error cargando interstitial, reintentando...");
-        setTimeout(function() {
+    // Evento si falla la carga
+    median.on("admob.interstitial.failedToLoad", function (err) {
+        console.log("❌ Falló carga interstitial:", err);
+        setTimeout(() => {
             median.admob.interstitial.load();
-        }, 3000);
+        }, 2000);
     });
 
-    // Cuando se cierra el interstitial
-    median.on("admob.interstitial.dismissed", function() {
-        console.log("Interstitial cerrado, recargando...");
+    // Cuando se cierra
+    median.on("admob.interstitial.dismissed", function () {
+        console.log("🔄 Cerrado. Recargando...");
         median.admob.interstitial.load();
     });
 
-    // Configurar el botón
-    document.getElementById("show-ad-button").addEventListener("click", function() {
-        if (median.admob.interstitial) {
-            median.admob.interstitial.show().catch(function(error) {
-                console.log("Error mostrando interstitial: " + error);
+    // BOTÓN PARA MOSTRAR
+    document.getElementById("show-ad-button").addEventListener("click", function () {
+        console.log("Botón presionado: intentar mostrar interstitial");
+
+        median.admob.interstitial.show()
+            .then(() => console.log("Mostrando anuncio..."))
+            .catch(err => {
+                console.log("❌ Error al mostrar:", err);
                 median.admob.interstitial.load();
             });
-        }
     });
-}, false);
+
+});
