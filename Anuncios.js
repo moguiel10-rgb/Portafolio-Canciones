@@ -1,4 +1,58 @@
 // ========================================================
+//   MINI-CONSOLA VISIBLE EN PANTALLA
+// ========================================================
+function createDebugConsole() {
+    const debugDiv = document.createElement('div');
+    debugDiv.id = 'debug-console';
+    debugDiv.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.8);
+        color: lime;
+        padding: 10px;
+        font-size: 12px;
+        z-index: 9999;
+        max-width: 300px;
+        max-height: 200px;
+        overflow-y: auto;
+        border-radius: 5px;
+        display: none;
+    `;
+    document.body.appendChild(debugDiv);
+    
+    const toggleBtn = document.createElement('button');
+    toggleBtn.textContent = 'DEBUG';
+    toggleBtn.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 10000;
+        background: red;
+        color: white;
+        border: none;
+        padding: 5px;
+        border-radius: 3px;
+    `;
+    toggleBtn.onclick = () => {
+        debugDiv.style.display = debugDiv.style.display === 'none' ? 'block' : 'none';
+    };
+    document.body.appendChild(toggleBtn);
+    
+    return debugDiv;
+}
+
+const debugConsole = createDebugConsole();
+
+function debugLog(message) {
+    console.log(message);
+    const entry = document.createElement('div');
+    entry.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+    debugConsole.appendChild(entry);
+    debugConsole.scrollTop = debugConsole.scrollHeight;
+}
+
+// ========================================================
 //   VARIABLES GLOBALES
 // ========================================================
 let interstitialLoaded = false;
@@ -10,48 +64,52 @@ let isShowingAd = false;
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
-    console.log("📱 Device ready, esperando Median...");
+    debugLog("📱 Device ready, esperando Median...");
     
-    // Esperar a que Median esté completamente listo
     if (typeof median !== 'undefined') {
+        debugLog("✅ Median encontrado");
         initAds();
     } else {
-        // Si median no está disponible, reintentar después de un tiempo
+        debugLog("❌ Median NO encontrado, reintentando...");
         setTimeout(() => {
             if (typeof median !== 'undefined') {
+                debugLog("✅ Median encontrado en reintento");
                 initAds();
             } else {
-                console.error("❌ Median SDK no encontrado");
+                debugLog("❌❌ Median SDK no encontrado después de reintento");
             }
         }, 2000);
     }
 }
 
 function initAds() {
-    console.log("🚀 Inicializando anuncios con Median...");
+    debugLog("🚀 Inicializando anuncios...");
     
-    // INICIALIZAR EL INTERSTITIAL (esto te falta)
     if (median.admob && median.admob.interstitial) {
-        median.admob.interstitial.config({
-            id: 'ca-app-pub-3940256099942544/1033173712' // Tu interstitial ID
-        });
-        console.log("✅ Interstitial configurado");
+        try {
+            median.admob.interstitial.config({
+                id: 'ca-app-pub-3940256099942544/1033173712'
+            });
+            debugLog("✅ Interstitial CONFIGURADO");
+        } catch (error) {
+            debugLog("❌ Error configurando: " + error);
+        }
+    } else {
+        debugLog("❌ median.admob.interstitial NO disponible");
     }
     
     registerMedianEvents();
     
-    // Cargar interstitial después de configurarlo
     setTimeout(() => {
         loadInterstitial();
     }, 1000);
     
-    // Listener del botón
     const adButton = document.getElementById("show-ad-button");
     if (adButton) {
         adButton.addEventListener("click", onAdButtonClick);
-        console.log("✅ Botón de anuncios configurado");
+        debugLog("✅ Botón configurado");
     } else {
-        console.error("❌ Botón show-ad-button no encontrado");
+        debugLog("❌ Botón NO encontrado");
     }
 }
 
@@ -60,33 +118,27 @@ function initAds() {
 // ========================================================
 function registerMedianEvents() {
     if (typeof median === 'undefined') {
-        console.error("❌ Median no disponible para registrar eventos");
+        debugLog("❌ Median no disponible para eventos");
         return;
     }
 
-    // Interstitial cargado correctamente
     median.on("admob.interstitial.loaded", () => {
-        console.log("📥 Interstitial LISTO para mostrarse");
+        debugLog("📥 Interstitial LISTO para mostrarse");
         interstitialLoaded = true;
         enableAdButton();
     });
 
-    // Error al cargar el interstitial
     median.on("admob.interstitial.failedToLoad", (err) => {
-        console.warn("❌ Falló la carga del interstitial:", err);
+        debugLog("❌ Falló carga interstitial: " + JSON.stringify(err));
         interstitialLoaded = false;
         enableAdButton();
-        // Reintentar después de 3 segundos
         setTimeout(loadInterstitial, 3000);
     });
 
-    // Cuando se cierra
     median.on("admob.interstitial.dismissed", () => {
-        console.log("👋 Interstitial CERRADO");
+        debugLog("👋 Interstitial CERRADO");
         isShowingAd = false;
         interstitialLoaded = false;
-        
-        // Cargar otro anuncio automáticamente
         setTimeout(loadInterstitial, 1000);
         resetAdButton();
     });
@@ -97,19 +149,19 @@ function registerMedianEvents() {
 // ========================================================
 function loadInterstitial() {
     if (typeof median === 'undefined' || !median.admob || !median.admob.interstitial) {
-        console.error("❌ Median Admob no disponible para cargar interstitial");
+        debugLog("❌ Median Admob no disponible para cargar");
         return;
     }
 
-    console.log("🔄 Cargando interstitial...");
+    debugLog("🔄 Cargando interstitial...");
     interstitialLoaded = false;
 
     median.admob.interstitial.load()
         .then(() => {
-            console.log("✅ Petición de interstitial enviada correctamente");
+            debugLog("✅ Petición interstitial enviada");
         })
         .catch((err) => {
-            console.error("❌ Error al cargar interstitial:", err);
+            debugLog("❌ Error cargar interstitial: " + err);
             interstitialLoaded = false;
             enableAdButton();
         });
@@ -120,27 +172,27 @@ function loadInterstitial() {
 // ========================================================
 function showInterstitialAd() {
     if (typeof median === 'undefined' || !median.admob || !median.admob.interstitial) {
-        console.error("❌ Median Admob no disponible para mostrar interstitial");
+        debugLog("❌ Median Admob no disponible para mostrar");
         enableAdButton();
         return;
     }
 
     if (!interstitialLoaded) {
-        console.log("⚠ Interstitial no cargado, recargando...");
+        debugLog("⚠ Interstitial no cargado, recargando...");
         loadInterstitial();
         enableAdButton();
         return;
     }
 
-    console.log("🎬 Mostrando interstitial...");
+    debugLog("🎬 Mostrando interstitial...");
     
     median.admob.interstitial.show()
         .then(() => {
-            console.log("✅ Interstitial mostrado");
+            debugLog("✅ Interstitial mostrado");
             isShowingAd = true;
         })
         .catch((err) => {
-            console.error("❌ Error al mostrar interstitial:", err);
+            debugLog("❌ Error mostrar interstitial: " + err);
             interstitialLoaded = false;
             resetAdButton();
             loadInterstitial();
@@ -151,10 +203,10 @@ function showInterstitialAd() {
 //   LÓGICA DEL BOTÓN
 // ========================================================
 function onAdButtonClick() {
-    console.log("👆 Botón presionado - Estado interstitial:", interstitialLoaded);
+    debugLog("👆 Botón presionado - Estado: " + interstitialLoaded);
     
     if (!interstitialLoaded) {
-        console.log("🔄 Interstitial no listo, cargando...");
+        debugLog("🔄 Interstitial no listo, cargando...");
         disableAdButton();
         loadInterstitial();
         return;
@@ -193,5 +245,5 @@ function resetAdButton() {
 
 // Cargar interstitial cuando la página esté lista
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("📄 DOM cargado, preparando anuncios...");
+    debugLog("📄 DOM cargado, preparando anuncios...");
 });
