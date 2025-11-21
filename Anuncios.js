@@ -1,8 +1,10 @@
 document.addEventListener("deviceready", function () {
 
-    console.log("deviceready OK – Iniciando pruebas de AdMob...");
+    console.log("📱 deviceready OK – Iniciando AdMob...");
 
-    // ---- Verificar disponibilidad del plugin ----
+    // ------------------------------------
+    // 🔍 DETECTAR plugin de AdMob
+    // ------------------------------------
     function admobDisponible() {
         return (
             (window.Median && window.Median.admob) ||
@@ -12,46 +14,66 @@ document.addEventListener("deviceready", function () {
     }
 
     if (!admobDisponible()) {
-        alert("❌ AdMob NO está disponible todavía.\nRevisa si el plugin se instaló correctamente.");
-        console.error("AdMob no detectado en ninguna ruta conocida.");
+        alert("❌ AdMob no está disponible.\nRevisa si el plugin se instaló correctamente.");
+        console.error("AdMob no detectado en ninguna ruta.");
         return;
     }
 
     alert("✅ AdMob detectado correctamente.");
 
-    // ------------------------------
-    //   MOSTRAR BANNER AUTOMÁTICO
-    // ------------------------------
-    if (window.Median && window.Median.admob && window.Median.admob.showBanner) {
-        window.Median.admob.showBanner();
-        console.log("Banner solicitado.");
-    } else if (window.Admob && window.Admob.showBanner) {
-        window.Admob.showBanner();
+    // ------------------------------------
+    // 📌 MOSTRAR BANNER AUTOMÁTICO
+    // ------------------------------------
+    try {
+        if (window.Median && window.Median.admob && window.Median.admob.showBanner) {
+            window.Median.admob.showBanner();
+            console.log("Banner solicitado desde Median.");
+        } else if (window.Admob && window.Admob.showBanner) {
+            window.Admob.showBanner();
+            console.log("Banner solicitado desde Admob.");
+        } else {
+            console.warn("❗ No existe función showBanner en ninguno de los plugins.");
+        }
+    } catch (err) {
+        console.error("Error al mostrar banner:", err);
     }
 
-
-    // ------------------------------
-    //   BOTÓN: MOSTRAR INTERSTITIAL
-    // ------------------------------
+    // ------------------------------------
+    // 🎬 BOTÓN PARA INTERSTITIAL
+    // ------------------------------------
     const btn = document.getElementById("video-btn");
 
     if (!btn) {
-        console.error("Botón #video-btn no encontrado.");
+        console.error("❌ No se encontró el botón #video-btn.");
         return;
     }
 
-    btn.addEventListener("click", function () {
+    btn.addEventListener("click", function (e) {
+        e.preventDefault();   // ❗ evita navegación del <a>
+        e.stopPropagation();  // ❗ evita otros eventos
+        console.log("Botón presionado. Intentando mostrar interstitial...");
         alert("Intentando mostrar interstitial...");
 
+        // → Ruta Median
         if (window.Median && window.Median.admob) {
             window.Median.admob.showInterstitial({}, function (ok) {
-                alert(ok ? "📢 Interstitial mostrado" : "❌ Error al mostrar interstitial");
+                if (ok) {
+                    alert("📢 Interstitial mostrado correctamente.");
+                } else {
+                    alert("❌ Error al mostrar interstitial. Ver logs.");
+                }
             });
-        } else if (window.Admob && window.Admob.showInterstitial) {
-            window.Admob.showInterstitial();
-        } else {
-            alert("❌ No existe método showInterstitial en ningún plugin.");
+            return;
         }
+
+        // → Ruta AdMob normal
+        if (window.Admob && window.Admob.showInterstitial) {
+            window.Admob.showInterstitial();
+            alert("📢 Llamada a interstitial enviada (ruta AdMob).");
+            return;
+        }
+
+        alert("❌ No existe método showInterstitial en ningún plugin.");
     });
 
 }, false);
