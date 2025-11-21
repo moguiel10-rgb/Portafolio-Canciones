@@ -1,45 +1,59 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 
-    function isAdMobAvailable() {
-        return typeof window.Median !== 'undefined' && typeof window.Median.admob !== 'undefined';
+    // ---- PRUEBA: Mostrar qué propiedades existen en window ----
+    try {
+        alert("Claves principales de window:\n" + JSON.stringify(Object.keys(window).slice(0, 30), null, 2));
+    } catch (e) {
+        alert("No se pudieron mostrar las claves de window.");
     }
 
-    function showInterstitialAd() {
-        if (!isAdMobAvailable()) {
-            console.error("Error: El plugin AdMob de Median no está disponible.");
-            alert("Error: El plugin AdMob de Median no está disponible.");
-            return;
+    // ---- PRUEBA: Mostrar plugins si existen ----
+    try {
+        if (window.plugins) {
+            alert("Plugins detectados en window.plugins:\n" + JSON.stringify(Object.keys(window.plugins), null, 2));
+        } else {
+            alert("window.plugins NO existe.");
         }
-
-        console.log("AdMob disponible. Intentando mostrar el anuncio interstitial...");
-        alert("Intentando mostrar anuncio...");
-
-        window.Median.admob.showInterstitial({}, function(success) {
-            if (success) {
-                console.log("Callback de éxito: Anuncio interstitial mostrado o cerrado.");
-                alert("¡Anuncio mostrado con éxito!");
-            } else {
-                console.error("Callback de error: No se pudo mostrar el anuncio interstitial.");
-                alert("Error al mostrar el anuncio. Revisa los logs de ADB.");
-            }
-        });
+    } catch (e) {
+        alert("Error leyendo window.plugins");
     }
 
-    // ---- Aquí se corrige el ID ----
-    var btn = document.getElementById("video-btn");
+    // ---- PRUEBA: Mostrar window.Admob si existe ----
+    try {
+        if (window.Admob) {
+            alert("AdMob detectado en window.Admob:\n" + JSON.stringify(Object.keys(window.Admob), null, 2));
+        } else {
+            alert("window.Admob NO existe.");
+        }
+    } catch (e) {
+        alert("Error leyendo window.Admob");
+    }
 
-    if (btn) {
-        btn.addEventListener("click", function(e) {
-            e.preventDefault(); // evita refrescar la página
-            showInterstitialAd();
-        });
+    // ---- PRUEBA: Mostrar window.Median.admob si existe ----
+    try {
+        if (window.Median && window.Median.admob) {
+            alert("AdMob detectado en window.Median.admob:\n" + JSON.stringify(Object.keys(window.Median.admob), null, 2));
+        } else {
+            alert("window.Median.admob NO existe.");
+        }
+    } catch (e) {
+        alert("Error leyendo window.Median.admob");
+    }
+
+    // ---- ANALISIS AUTOMATICO ----
+    function detectarAdmob() {
+        if (window.plugins && window.plugins.admob) return "window.plugins.admob";
+        if (window.Admob) return "window.Admob";
+        if (window.Median && window.Median.admob) return "window.Median.admob";
+        return null;
+    }
+
+    const detectado = detectarAdmob();
+
+    if (detectado) {
+        alert("✅ Plugin AdMob detectado correctamente en: " + detectado);
     } else {
-        console.error("Error: No se encontró el botón con id 'video-btn'.");
+        alert("❌ No se detectó plugin AdMob en ninguna ruta conocida.\n\nEso explica tu error.");
     }
 
-    // Banner opcional
-    if (isAdMobAvailable() && window.Median.admob.showBanner) {
-        console.log("Mostrando banner...");
-        window.Median.admob.showBanner();
-    }
 });
