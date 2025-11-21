@@ -31,11 +31,12 @@ body {
     top: 15px;
     left: 15px;
     z-index: 9999;
+    width: 45px;          /* ancho */
+    height: 45px;         /* alto (igual al ancho para que sea un círculo perfecto) */
     background: #1e3c72;
     color: #fff;
-    padding: 12px 14px;
     border-radius: 50%;
-    font-size: 22px;
+    font-size: 20px;      /* tamaño del ícono/texto */
     display: flex;
     align-items: center;
     justify-content: center;
