@@ -1,59 +1,57 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("deviceready", function () {
 
-    // ---- PRUEBA: Mostrar qué propiedades existen en window ----
-    try {
-        alert("Claves principales de window:\n" + JSON.stringify(Object.keys(window).slice(0, 30), null, 2));
-    } catch (e) {
-        alert("No se pudieron mostrar las claves de window.");
+    console.log("deviceready OK – Iniciando pruebas de AdMob...");
+
+    // ---- Verificar disponibilidad del plugin ----
+    function admobDisponible() {
+        return (
+            (window.Median && window.Median.admob) ||
+            (window.plugins && window.plugins.admob) ||
+            window.Admob
+        );
     }
 
-    // ---- PRUEBA: Mostrar plugins si existen ----
-    try {
-        if (window.plugins) {
-            alert("Plugins detectados en window.plugins:\n" + JSON.stringify(Object.keys(window.plugins), null, 2));
-        } else {
-            alert("window.plugins NO existe.");
-        }
-    } catch (e) {
-        alert("Error leyendo window.plugins");
+    if (!admobDisponible()) {
+        alert("❌ AdMob NO está disponible todavía.\nRevisa si el plugin se instaló correctamente.");
+        console.error("AdMob no detectado en ninguna ruta conocida.");
+        return;
     }
 
-    // ---- PRUEBA: Mostrar window.Admob si existe ----
-    try {
-        if (window.Admob) {
-            alert("AdMob detectado en window.Admob:\n" + JSON.stringify(Object.keys(window.Admob), null, 2));
-        } else {
-            alert("window.Admob NO existe.");
-        }
-    } catch (e) {
-        alert("Error leyendo window.Admob");
+    alert("✅ AdMob detectado correctamente.");
+
+    // ------------------------------
+    //   MOSTRAR BANNER AUTOMÁTICO
+    // ------------------------------
+    if (window.Median && window.Median.admob && window.Median.admob.showBanner) {
+        window.Median.admob.showBanner();
+        console.log("Banner solicitado.");
+    } else if (window.Admob && window.Admob.showBanner) {
+        window.Admob.showBanner();
     }
 
-    // ---- PRUEBA: Mostrar window.Median.admob si existe ----
-    try {
+
+    // ------------------------------
+    //   BOTÓN: MOSTRAR INTERSTITIAL
+    // ------------------------------
+    const btn = document.getElementById("video-btn");
+
+    if (!btn) {
+        console.error("Botón #video-btn no encontrado.");
+        return;
+    }
+
+    btn.addEventListener("click", function () {
+        alert("Intentando mostrar interstitial...");
+
         if (window.Median && window.Median.admob) {
-            alert("AdMob detectado en window.Median.admob:\n" + JSON.stringify(Object.keys(window.Median.admob), null, 2));
+            window.Median.admob.showInterstitial({}, function (ok) {
+                alert(ok ? "📢 Interstitial mostrado" : "❌ Error al mostrar interstitial");
+            });
+        } else if (window.Admob && window.Admob.showInterstitial) {
+            window.Admob.showInterstitial();
         } else {
-            alert("window.Median.admob NO existe.");
+            alert("❌ No existe método showInterstitial en ningún plugin.");
         }
-    } catch (e) {
-        alert("Error leyendo window.Median.admob");
-    }
+    });
 
-    // ---- ANALISIS AUTOMATICO ----
-    function detectarAdmob() {
-        if (window.plugins && window.plugins.admob) return "window.plugins.admob";
-        if (window.Admob) return "window.Admob";
-        if (window.Median && window.Median.admob) return "window.Median.admob";
-        return null;
-    }
-
-    const detectado = detectarAdmob();
-
-    if (detectado) {
-        alert("✅ Plugin AdMob detectado correctamente en: " + detectado);
-    } else {
-        alert("❌ No se detectó plugin AdMob en ninguna ruta conocida.\n\nEso explica tu error.");
-    }
-
-});
+}, false);
