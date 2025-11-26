@@ -3,180 +3,167 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Política de Privacidad | Conexión 4:13</title>
+  <title>Política de Privacidad - Conexione</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
   <style>
-    :root {
-      --bg: #f4f6f9;
-      --card: #ffffff;
-      --accent: #4b6bfb;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --radius: 14px;
-      --shadow: 0 8px 24px rgba(0,0,0,0.08);
-    }
-
     body {
+      font-family: 'Outfit', sans-serif;
+      background: url("Imagenes/Alfombra.jpg") no-repeat center center fixed;
+      background-size: cover;
       margin: 0;
       padding: 40px 20px;
-      background: var(--bg);
-      font-family: 'Poppins', sans-serif;
-      color: var(--text);
-      line-height: 1.7;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
     }
 
     .container {
-      max-width: 900px;
-      margin: auto;
-      background: var(--card);
-      padding: 45px 55px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      animation: fadeIn .6s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 800px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      animation: fadeIn .8s ease-in-out;
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 10px;
-      color: var(--accent);
-      font-size: 2.2rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      color: #ffca28;
     }
 
     h2 {
-      margin-top: 35px;
-      color: #111827;
-      font-size: 1.4rem;
+      margin-top: 1.8rem;
+      font-weight: 600;
+      color: #ffca28;
     }
 
     p, li {
-      font-size: 1rem;
-      color: var(--text);
+      line-height: 1.6;
+      font-weight: 300;
+      opacity: 0.95;
     }
 
     ul {
-      padding-left: 20px;
+      margin-left: 1rem;
     }
 
     a {
-      color: var(--accent);
+      color: #ffca28;
+      font-weight: 600;
       text-decoration: none;
-      border-bottom: 1px dotted rgba(75,107,251,0.3);
     }
 
     a:hover {
-      text-decoration: underline;
+      opacity: 0.8;
+    }
+
+    .tag {
+      background: rgba(255, 202, 40, 0.2);
+      padding: 6px 12px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: #ffca28;
+      font-weight: 600;
     }
 
     footer {
       text-align: center;
-      margin-top: 45px;
-      color: var(--muted);
+      margin-top: 2rem;
+      opacity: 0.7;
       font-size: 0.9rem;
     }
 
-    .tag {
-      background: rgba(75,107,251,0.1);
-      padding: 6px 12px;
-      border-radius: 8px;
-      display: inline-block;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-      color: var(--accent);
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5rem;
+      }
     }
   </style>
 </head>
 
 <body>
+
   <div class="container">
 
     <div class="tag">Última actualización: 26 de noviembre de 2025</div>
 
     <h1>Política de Privacidad</h1>
 
-    <p>En <strong>Conexión 4:13</strong> respetamos y protegemos tu información personal. Esta política describe qué datos recopilamos, cómo los utilizamos y cuáles son tus derechos al usar nuestra aplicación, la cual funciona mediante tecnología webview, procesamiento con <strong>Median</strong> y servicios proporcionados por terceros como Firebase y OneSignal.</p>
+    <p>En <strong>Conexione</strong> respetamos y protegemos tu información personal. Esta política describe qué datos recopilamos, cómo los utilizamos y cuáles son tus derechos al usar nuestra aplicación, la cual funciona mediante tecnología webview junto con servicios como Firebase, OneSignal y Median.</p>
 
     <h2>1. Información que recopilamos</h2>
-    <p>Recopilamos únicamente la información necesaria para el funcionamiento de la aplicación:</p>
-
+    <p>Recopilamos únicamente la información necesaria para el funcionamiento de la app:</p>
     <ul>
       <li><strong>Datos de autenticación (Firebase Auth):</strong> correo electrónico y contraseña cifrada.</li>
-      <li><strong>Datos del dispositivo:</strong> tipo de dispositivo, sistema operativo, versión de la app.</li>
-      <li><strong>Preferencias del usuario:</strong> tono de canciones, ajustes internos de la app.</li>
-      <li><strong>Notificaciones (OneSignal):</strong> sólo si das tu consentimiento, se genera un identificador único para enviarte notificaciones relevantes.</li>
-      <li><strong>Datos de navegación interna:</strong> interacción dentro del webview para mejorar la experiencia (sin rastreo externo).</li>
+      <li><strong>Datos del dispositivo:</strong> sistema operativo, modelo, versión de la app.</li>
+      <li><strong>Preferencias del usuario:</strong> ajustes de tono y configuraciones internas.</li>
+      <li><strong>Notificaciones (OneSignal):</strong> identificador único solo si das consentimiento.</li>
+      <li><strong>Navegación interna:</strong> interacción dentro del webview (sin rastreo externo).</li>
     </ul>
 
-    <h2>2. Cómo usamos la información</h2>
-    <p>Utilizamos tus datos únicamente para:</p>
-
+    <h2>2. Uso de la información</h2>
     <ul>
-      <li>Autenticación segura mediante Firebase.</li>
-      <li>Recordar tus configuraciones y tono de canciones.</li>
-      <li>Enviarte notificaciones <strong>solo si aceptas</strong> recibirlas.</li>
-      <li>Garantizar el correcto funcionamiento y rendimiento a través de Median.</li>
-      <li>Mejorar la estabilidad y seguridad de la aplicación.</li>
+      <li>Autenticación y acceso a tu cuenta.</li>
+      <li>Recordar ajustes de canciones.</li>
+      <li>Enviar notificaciones opcionales.</li>
+      <li>Mejorar funcionamiento, seguridad y estabilidad.</li>
     </ul>
-
-    <p>No utilizamos tus datos con fines publicitarios ni los vendemos bajo ninguna circunstancia.</p>
 
     <h2>3. Servicios de terceros</h2>
-    <p>Para operar la aplicación utilizamos proveedores confiables:</p>
-
+    <p>Utilizamos servicios confiables y certificados:</p>
     <ul>
-      <li><strong>Firebase (Google)</strong> — Autenticación segura, base de datos, hosting.</li>
-      <li><strong>OneSignal</strong> — Envío de notificaciones push (solo con tu permiso).</li>
-      <li><strong>Median</strong> — Optimización y funcionamiento interno de la app.</li>
+      <li><strong>Firebase (Google):</strong> autenticación, hosting y base de datos.</li>
+      <li><strong>OneSignal:</strong> notificaciones push.</li>
+      <li><strong>Median:</strong> optimización interna.</li>
     </ul>
 
-    <p>Cada uno maneja tus datos únicamente según lo necesario y bajo estrictas medidas de seguridad.</p>
-
-    <h2>4. Seguridad de la información</h2>
-    <p>
-      Tus datos están protegidos mediante:
-    </p>
+    <h2>4. Seguridad</h2>
     <ul>
-      <li>Cifrado TLS/HTTPS en todas las conexiones.</li>
-      <li>Contraseñas almacenadas con hashing seguro en Firebase.</li>
-      <li>Controles de acceso restringido.</li>
+      <li>Conexiones seguras TLS/HTTPS.</li>
+      <li>Contraseñas cifradas con hashing.</li>
+      <li>Acceso restringido a servidores.</li>
     </ul>
-
-    <p>Aunque implementamos medidas sólidas, ningún sistema es completamente infalible. En caso de una brecha, te notificaremos según la ley aplicable.</p>
 
     <h2>5. Retención de datos</h2>
-    <p>
-      Conservamos tus datos mientras tu cuenta esté activa. Si solicitas la eliminación, todos tus datos serán eliminados de manera permanente.
-    </p>
+    <p>Mantenemos tu información mientras tu cuenta esté activa. Si solicitas la eliminación, se borrará de forma permanente.</p>
 
-    <h2>6. Notificaciones push</h2>
-    <p>
-      La activación de notificaciones es completamente opcional. Si aceptas, OneSignal generará un identificador anónimo para poder enviarte avisos relevantes.
-    </p>
+    <h2>6. Notificaciones Push</h2>
+    <p>Son completamente opcionales. Solo se activan si tú lo permites.</p>
 
     <h2>7. Menores de edad</h2>
-    <p>Conexión 4:13 <strong>no está dirigida a menores de 13 años</strong>. No recopilamos intencionalmente datos personales de menores. Si descubrimos un registro de un menor, la cuenta será eliminada.</p>
+    <p>Conexione <strong>no está dirigida a menores de 13 años</strong>. Eliminamos cuentas detectadas bajo esta edad.</p>
 
     <h2>8. Tus derechos</h2>
-    <p>Puedes solicitar en cualquier momento:</p>
     <ul>
-      <li>Acceso a tus datos.</li>
-      <li>Corrección de información.</li>
-      <li>Eliminación total de tu cuenta.</li>
+      <li>Consultar tus datos.</li>
+      <li>Modificar o corregir.</li>
+      <li>Solicitar eliminación total.</li>
     </ul>
 
-    <p>Escríbenos a: <a href="mailto:conexion705@gmail.com">conexion705@gmail.com</a>.</p>
+    <p>Contacto: <a href="mailto:conexion705@gmail.com">conexion705@gmail.com</a></p>
 
-    <h2>9. Cambios en esta política</h2>
-    <p>Podemos actualizar esta política ocasionalmente. Publicaremos cualquier modificación en esta página con la fecha correspondiente.</p>
+    <h2>9. Cambios en esta Política</h2>
+    <p>Podemos actualizar esta política. La fecha de modificación aparecerá siempre en esta sección.</p>
 
     <footer>
-      © 2025 Conexión 4:13 — Todos los derechos reservados.
+      © 2025 Conexione — Todos los derechos reservados.
     </footer>
 
   </div>
+
 </body>
 </html>
