@@ -54,7 +54,21 @@ document.addEventListener("deviceready", function () {
         console.log("✅ Enlace de Transponer configurado para contar acciones.");
     }
 
-    // C. (Opcional) Otras acciones importantes que quieras monetizar
+    // C. Acciones de Transponer PDF (Generar Vista Previa y Descargar)
+    const procesarBtn = document.getElementById('procesarBtn');
+    const descargarBtn = document.getElementById('descargarBtn');
+
+    if (procesarBtn) {
+        procesarBtn.addEventListener('click', handleAction);
+        console.log("✅ Botón 'Generar Vista Previa' configurado para contar acciones.");
+    }
+
+    if (descargarBtn) {
+        descargarBtn.addEventListener('click', handleAction);
+        console.log("✅ Botón 'Descargar PDF Transpuesto' configurado para contar acciones.");
+    }
+
+    // D. Otras acciones importantes que quieras monetizar
     // Por ejemplo, el enlace de Iniciar Sesión/Cerrar Sesión
     const loginLink = document.getElementById('login-link');
     if (loginLink) {
