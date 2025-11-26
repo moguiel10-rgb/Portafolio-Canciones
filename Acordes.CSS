@@ -698,11 +698,11 @@ footer {
     }
     
     .textos-header h1 {
-        font-size: 35px;
+        font-size: 33px;
     }
     
     .textos-header h2 {
-        font-size: 24px;
+        font-size: 22px;
     }
     
     .contenedor-sobre-nosotros {
@@ -733,11 +733,11 @@ footer {
 
 @media screen and (max-width: 600px) {
     .textos-header h1 {
-        font-size: 35px;
+        font-size: 33px;
     }
     
     .textos-header h2 {
-        font-size: 24px;
+        font-size: 22px;
     }
     
     .titulo {
@@ -780,11 +780,11 @@ footer {
 
 @media screen and (max-width: 400px) {
     .textos-header h1 {
-        font-size: 35px;
+        font-size: 33px;
     }
     
     .textos-header h2 {
-        font-size: 24px;
+        font-size: 22px;
     }
     
     .pdf-item {
