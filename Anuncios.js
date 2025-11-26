@@ -11,7 +11,7 @@ document.addEventListener("deviceready", function () {
         if (window.Median && window.Median.admob) {
             try {
                 console.log("🎬 Solicitando interstitial...");
-                median.admob.showDemoInterstitial();
+                median.admob.showInterstitialIfReady();
                 console.log("✅ Solicitud de interstitial enviada");
                 // Reiniciar el contador solo si se intenta mostrar el anuncio
                 actionCount = 0; 
