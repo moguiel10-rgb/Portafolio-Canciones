@@ -4,39 +4,68 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Política de Privacidad | Conexión 4:13</title>
+
   <style>
+    :root {
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --accent: #4b6bfb;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --radius: 14px;
+      --shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
     body {
-      font-family: 'Poppins', sans-serif;
       margin: 0;
-      padding: 40px;
-      background-color: #f5f5f5;
-      color: #333;
-      line-height: 1.6;
+      padding: 40px 20px;
+      background: var(--bg);
+      font-family: 'Poppins', sans-serif;
+      color: var(--text);
+      line-height: 1.7;
     }
 
     .container {
-      background: white;
-      border-radius: 10px;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 40px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 900px;
+      margin: auto;
+      background: var(--card);
+      padding: 45px 55px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      animation: fadeIn .6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h1 {
       text-align: center;
-      color: #222;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: 2.2rem;
     }
 
     h2 {
-      color: #444;
-      margin-top: 30px;
+      margin-top: 35px;
+      color: #111827;
+      font-size: 1.4rem;
+    }
+
+    p, li {
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    ul {
+      padding-left: 20px;
     }
 
     a {
-      color: #007bff;
+      color: var(--accent);
       text-decoration: none;
+      border-bottom: 1px dotted rgba(75,107,251,0.3);
     }
 
     a:hover {
@@ -45,35 +74,109 @@
 
     footer {
       text-align: center;
-      margin-top: 40px;
-      font-size: 14px;
-      color: #777;
+      margin-top: 45px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .tag {
+      background: rgba(75,107,251,0.1);
+      padding: 6px 12px;
+      border-radius: 8px;
+      display: inline-block;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: var(--accent);
     }
   </style>
 </head>
+
 <body>
   <div class="container">
+
+    <div class="tag">Última actualización: 26 de noviembre de 2025</div>
+
     <h1>Política de Privacidad</h1>
-    <p>En <strong>Conexión 4:13</strong>, valoramos tu privacidad y nos comprometemos a proteger tus datos personales. Esta política explica cómo recopilamos, usamos y protegemos la información que compartes al usar nuestra aplicación web.</p>
 
-    <h2>Información que recopilamos</h2>
-    <p>Cuando inicias sesión mediante Google o Facebook, recibimos tu nombre, dirección de correo electrónico y foto de perfil, exclusivamente para identificarte dentro de nuestra aplicación.</p>
+    <p>En <strong>Conexión 4:13</strong> respetamos y protegemos tu información personal. Esta política describe qué datos recopilamos, cómo los utilizamos y cuáles son tus derechos al usar nuestra aplicación, la cual funciona mediante tecnología webview, procesamiento con <strong>Median</strong> y servicios proporcionados por terceros como Firebase y OneSignal.</p>
 
-    <h2>Uso de la información</h2>
-    <p>La información se utiliza únicamente para autenticarte, personalizar tu experiencia y mantener tu sesión activa. No compartimos tus datos con terceros ni los usamos para fines publicitarios.</p>
+    <h2>1. Información que recopilamos</h2>
+    <p>Recopilamos únicamente la información necesaria para el funcionamiento de la aplicación:</p>
 
-    <h2>Seguridad</h2>
-    <p>Conexión 4:13 utiliza la infraestructura segura de Firebase (Google) para proteger tus datos y conexiones bajo el protocolo HTTPS.</p>
+    <ul>
+      <li><strong>Datos de autenticación (Firebase Auth):</strong> correo electrónico y contraseña cifrada.</li>
+      <li><strong>Datos del dispositivo:</strong> tipo de dispositivo, sistema operativo, versión de la app.</li>
+      <li><strong>Preferencias del usuario:</strong> tono de canciones, ajustes internos de la app.</li>
+      <li><strong>Notificaciones (OneSignal):</strong> sólo si das tu consentimiento, se genera un identificador único para enviarte notificaciones relevantes.</li>
+      <li><strong>Datos de navegación interna:</strong> interacción dentro del webview para mejorar la experiencia (sin rastreo externo).</li>
+    </ul>
 
-    <h2>Tus derechos</h2>
-    <p>Puedes solicitar la eliminación de tu cuenta o de cualquier dato personal escribiendo a: <a href="mailto:contacto@conexion413.com">contacto@conexion413.com</a>.</p>
+    <h2>2. Cómo usamos la información</h2>
+    <p>Utilizamos tus datos únicamente para:</p>
 
-    <h2>Cambios en esta política</h2>
-    <p>Podemos actualizar esta política ocasionalmente. Cualquier cambio será publicado en esta misma página.</p>
+    <ul>
+      <li>Autenticación segura mediante Firebase.</li>
+      <li>Recordar tus configuraciones y tono de canciones.</li>
+      <li>Enviarte notificaciones <strong>solo si aceptas</strong> recibirlas.</li>
+      <li>Garantizar el correcto funcionamiento y rendimiento a través de Median.</li>
+      <li>Mejorar la estabilidad y seguridad de la aplicación.</li>
+    </ul>
+
+    <p>No utilizamos tus datos con fines publicitarios ni los vendemos bajo ninguna circunstancia.</p>
+
+    <h2>3. Servicios de terceros</h2>
+    <p>Para operar la aplicación utilizamos proveedores confiables:</p>
+
+    <ul>
+      <li><strong>Firebase (Google)</strong> — Autenticación segura, base de datos, hosting.</li>
+      <li><strong>OneSignal</strong> — Envío de notificaciones push (solo con tu permiso).</li>
+      <li><strong>Median</strong> — Optimización y funcionamiento interno de la app.</li>
+    </ul>
+
+    <p>Cada uno maneja tus datos únicamente según lo necesario y bajo estrictas medidas de seguridad.</p>
+
+    <h2>4. Seguridad de la información</h2>
+    <p>
+      Tus datos están protegidos mediante:
+    </p>
+    <ul>
+      <li>Cifrado TLS/HTTPS en todas las conexiones.</li>
+      <li>Contraseñas almacenadas con hashing seguro en Firebase.</li>
+      <li>Controles de acceso restringido.</li>
+    </ul>
+
+    <p>Aunque implementamos medidas sólidas, ningún sistema es completamente infalible. En caso de una brecha, te notificaremos según la ley aplicable.</p>
+
+    <h2>5. Retención de datos</h2>
+    <p>
+      Conservamos tus datos mientras tu cuenta esté activa. Si solicitas la eliminación, todos tus datos serán eliminados de manera permanente.
+    </p>
+
+    <h2>6. Notificaciones push</h2>
+    <p>
+      La activación de notificaciones es completamente opcional. Si aceptas, OneSignal generará un identificador anónimo para poder enviarte avisos relevantes.
+    </p>
+
+    <h2>7. Menores de edad</h2>
+    <p>Conexión 4:13 <strong>no está dirigida a menores de 13 años</strong>. No recopilamos intencionalmente datos personales de menores. Si descubrimos un registro de un menor, la cuenta será eliminada.</p>
+
+    <h2>8. Tus derechos</h2>
+    <p>Puedes solicitar en cualquier momento:</p>
+    <ul>
+      <li>Acceso a tus datos.</li>
+      <li>Corrección de información.</li>
+      <li>Eliminación total de tu cuenta.</li>
+    </ul>
+
+    <p>Escríbenos a: <a href="mailto:conexion705@gmail.com">conexion705@gmail.com</a>.</p>
+
+    <h2>9. Cambios en esta política</h2>
+    <p>Podemos actualizar esta política ocasionalmente. Publicaremos cualquier modificación en esta página con la fecha correspondiente.</p>
 
     <footer>
-      &copy; 2025 Conexión 4:13 — Todos los derechos reservados.
+      © 2025 Conexión 4:13 — Todos los derechos reservados.
     </footer>
+
   </div>
 </body>
 </html>
