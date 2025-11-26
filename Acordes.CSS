@@ -25,18 +25,18 @@ body {
 }
 
 /*Header*/
-/* Botón fijo de video */
+/* Botón fijo de video 
 #video-btn {
     position: fixed;
     top: 15px;
     left: 15px;
     z-index: 9999;
-    width: 45px;          /* ancho */
-    height: 45px;         /* alto (igual al ancho para que sea un círculo perfecto) */
+    width: 45px;          
+    height: 45px;         
     background: #1e3c72;
     color: #fff;
     border-radius: 50%;
-    font-size: 20px;      /* tamaño del ícono/texto */
+    font-size: 20px;      
     display: flex;
     align-items: center;
     justify-content: center;
@@ -48,7 +48,7 @@ body {
 #video-btn:hover {
     transform: scale(1.15);
     background: #2817c5;
-}
+}*/
 header {
     width: 100%;
     height: auto;
@@ -733,11 +733,11 @@ footer {
 
 @media screen and (max-width: 600px) {
     .textos-header h1 {
-        font-size: 28px;
+        font-size: 50px;
     }
     
     .textos-header h2 {
-        font-size: 18px;
+        font-size: 35px;
     }
     
     .titulo {
