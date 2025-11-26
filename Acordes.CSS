@@ -87,7 +87,7 @@ nav {
     text-decoration: none; /* Elimina el subrayado (líneas) */
     margin: 0 5px; /* Espaciado entre enlaces */
     padding: 5px 0; /* Espaciado interno */
-    font-size: 18px;
+    font-size: 22px;
 }
 .menu a:hover {
     color: #333; /* Color ligeramente más oscuro al pasar el mouse */
@@ -657,11 +657,11 @@ footer {
 /* Media Queries */
 @media screen and (max-width: 1200px) {
     .textos-header h1 {
-        font-size: 40px;
+        font-size: 50px;
     }
     
     .textos-header h2 {
-        font-size: 25px;
+        font-size: 35px;
     }
     
     .titulo {
@@ -678,7 +678,7 @@ footer {
         display: none;
         flex-direction: column;
         width: 100%;
-        background: rgba(30, 60, 114, 0.9);
+        background: rgba(3, 30, 78, 0.767);
         position: absolute;
         top: 80px;
         right: 0;
@@ -702,7 +702,7 @@ footer {
     }
     
     .textos-header h2 {
-        font-size: 20px;
+        font-size: 24px;
     }
     
     .contenedor-sobre-nosotros {
@@ -733,11 +733,11 @@ footer {
 
 @media screen and (max-width: 600px) {
     .textos-header h1 {
-        font-size: 50px;
+        font-size: 35px;
     }
     
     .textos-header h2 {
-        font-size: 35px;
+        font-size: 24px;
     }
     
     .titulo {
@@ -780,11 +780,11 @@ footer {
 
 @media screen and (max-width: 400px) {
     .textos-header h1 {
-        font-size: 24px;
+        font-size: 35px;
     }
     
     .textos-header h2 {
-        font-size: 16px;
+        font-size: 24px;
     }
     
     .pdf-item {
