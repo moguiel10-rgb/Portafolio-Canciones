@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conexión 4:13</title>
     <link rel="shortcut icon" href="Imagenes/Icono.png" type="image/x-icon">
-    <link rel="stylesheet" href="Acordes.css">
+    <link rel="stylesheet" href="Acordes.CSS">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -29,13 +29,8 @@
             <h1>Firme está mi corazón, oh Dios, mi corazón está firme; ¿cantaré y entonaré salmos!</h1>
             <h2>Salmos 57:7</h2>
         </section>
-        <div class="wave" style="height: 110px; overflow: hidden;">
-            <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
-                <path d="M0.00,49.98 C149.99,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style="stroke: none; fill: #fff;"></path>
-            </svg>
-        </div>
+        <div class="wave" style="height: 110px; overflow: hidden;" ><svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;"><path d="M0.00,49.98 C149.99,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style="stroke: none; fill: #fff;"></path></svg></div>
     </header>
-    
     <main>
         <section class="contenedor sobre-nosotros">
             <h2 class="titulo" id="Acerca de">Acordes cristianos</h2>
@@ -49,22 +44,24 @@
                 </div>
             </div>
         </section>
-        
-        <div class="contenedor-buscador-principal">
-            <div class="buscador-container">
-                <div class="buscador-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="buscador-pdf" placeholder="Buscar PDF...">
-                    <div class="contador-resultados" id="contador-resultados"></div>
-                </div>
-            </div>
+       <!-- Buscador agregado aquí -->
+<div class="contenedor-buscador-principal">
+    <div class="buscador-container">
+        <div class="buscador-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="buscador-pdf" placeholder="Buscar PDF...">
+            <div class="contador-resultados" id="contador-resultados"></div>
         </div>
-        
+    </div>
+</div>
         <section class="portafolio" id="Portafolio" style="display: none;">
             <div class="contenedor">
                 <h2 class="titulo">Portafolio</h2>
+                
                 <div class="pdf-list">
-                    <img src="Imagenes/A Danzar Barak Barak_page-0001.jpg" alt="Vista previa">
+                    <!-- Aquí van todos tus elementos pdf-item -->
+                    <div class="pdf-item">
+    <img src="Imagenes/A Danzar Barak Barak_page-0001.jpg" alt="Vista previa">
     <a href="PDFs/A Danzar Barak Barak.pdf" download>A danzar</a>
 </div>
 <div class="pdf-item">
@@ -471,8 +468,8 @@
                         <img src="" alt="Vista previa">
                         <a href="" download></a>
                     </div>
-                </div>
-                
+                    </div>
+                <!-- Modal para ampliar imágenes -->
                 <div id="imagenModal" class="modal">
                     <span class="cerrar">&times;</span>
                     <img class="modal-contenido" id="imagenAmpliada">
@@ -505,24 +502,23 @@
             </div>
         </section>
     </main>
-    
     <footer id="Contactos">
         <div class="contenedor-footer">
-            <div class="content-foo">
-                <h4>Teléfono</h4>
-                <a href="https://wa.me/52minumero" target="_blank">
-                    <i class="fa-brands fa-whatsapp"></i> En Espera
-                </a>
-            </div> 
-            <div class="content-foo">
-                <h4>Email</h4>
-                <p>
-                    <a href="mailto:conexion705@gmail.com" style="color: inherit; text-decoration: none;">
-                        <i class="fa-solid fa-envelope"></i> conexion705@gmail.com
-                    </a>
-                </p>
-            </div>
-            <div class="content-foo">
+    <div class="content-foo">
+    <h4>Teléfono</h4>
+    <a href="https://wa.me/52minumero" target="_blank">
+    <i class="fa-brands fa-whatsapp"></i> En Espera</a>
+    </div> 
+    <div class="content-foo">
+  <h4>Email</h4>
+  <p>
+    <a href="mailto:conexion705@gmail.com" style="color: inherit; text-decoration: none;">
+      <i class="fa-solid fa-envelope"></i> conexion705@gmail.com
+    </a>
+  </p>
+</div>
+        
+    <div class="content-foo">
                 <h4>Instagram</h4>
                 <a href="https://www.instagram.com/_conexiones_es?igsh=MWJzczU5dHZyajh5dQ%3D%3D&utm_source=qr" target="_blank" class="social-icon">
                     <i class="fab fa-instagram"></i> @ConexionEs
@@ -530,17 +526,154 @@
             </div>
         </div>
         <h2 class="titulo-final">&copy; 2025 Conexión 4:13 | Todos los derechos reservados</h2>
+<div style="text-align: center; margin-top: 20px;">
+    </div>
     </footer>
-
-    <!-- Librerías externas -->
+        <!-- 1. Asegúrate de que el modal de imagen esté presente si tu Acordes.js lo necesita -->
+    <!-- Si ya tienes el modal en tu HTML, puedes omitir este div -->
+    <div id="imagenModal" class="modal">
+        <span class="cerrar">&times;</span>
+        <img class="modal-contenido" id="imagenAmpliada">
+        <div id="pieFoto"></div>
+    </div>
+    
+    <!-- 2. Cargar las librerías necesarias para PDF y jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js"></script>
-    
-    <!-- Script unificado -->
+
+    <!-- 3. Lógica de Autenticación de Firebase y Control de Visibilidad -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        
+        // 🔧 Configuración de Firebase (COPIADA DE TU login.js )
+        const firebaseConfig = {
+          apiKey: "AIzaSyDbzwAI7OGNPSNMXqTDz5vJH1A-gE-VxKs",
+          authDomain: "conexion-4-13.firebaseapp.com",
+          projectId: "conexion-4-13",
+          storageBucket: "conexion-4-13.firebasestorage.app",
+          messagingSenderId: "508766935713",
+          appId: "1:508766935713:web:318bc72eb805de3faceee0",
+          measurementId: "G-HW8K01LJZQ"
+        };
+        
+        // 🚀 Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // 2. Lógica de verificación de sesión
+        onAuthStateChanged(auth, (user) => {
+            const portafolio = document.getElementById('Portafolio');
+            const transponer = document.getElementById('transponer-pdf'); // Usando el ID sugerido
+            const loginLink = document.getElementById('login-link');
+
+            if (user) {
+                // Usuario logueado
+                console.log("Usuario autenticado:", user.email);
+                
+                // 1. Mostrar secciones protegidas
+                if (portafolio) portafolio.style.display = 'block';
+                if (transponer) transponer.style.display = 'block';
+
+                // 2. Cambiar enlace de "Iniciar Sesión" a "Cerrar Sesión"
+                if (loginLink) {
+                    loginLink.textContent = 'Cerrar Sesión';
+                    loginLink.href = '#'; // Evita la navegación
+                    loginLink.onclick = () => {
+                        signOut(auth).then(() => {
+                            // Redirigir a la página de inicio o recargar
+                            window.location.reload(); 
+                        }).catch((error) => {
+                            console.error("Error al cerrar sesión:", error);
+                        });
+                        return false;
+                    };
+                }
+
+            } else {
+                // Usuario no logueado
+                console.log("Usuario no autenticado.");
+                
+                // 1. Ocultar secciones protegidas (ya están ocultas por defecto, pero es buena práctica)
+                if (portafolio) portafolio.style.display = 'none';
+                if (transponer) transponer.style.display = 'none';
+
+                // 2. Asegurar que el enlace sea a la página de login
+                if (loginLink) {
+                    loginLink.textContent = 'Iniciar Sesión';
+                    loginLink.href = 'login.html';
+                    loginLink.onclick = null;
+                }
+            }
+        });
+    </script>
+
+    <!-- 4. Tu script principal debe ser el último en cargarse -->
     <script src="Acordes.js"></script>
     <script src="Anuncios.js"></script>
-    <script src="login.js"></script>
+    
+    <!-- 5. Script para el buscador -->
+    <script>
+        // Función para buscar PDFs
+        function buscarPDFs() {
+            const buscador = document.getElementById('buscador-pdf');
+            const pdfItems = document.querySelectorAll('.pdf-item');
+            const contador = document.getElementById('contador-resultados');
+            
+            if (!buscador) return;
+            
+            buscador.addEventListener('input', function() {
+                const termino = this.value.toLowerCase().trim();
+                let encontrados = 0;
+                
+                pdfItems.forEach(item => {
+                    const texto = item.querySelector('a').textContent.toLowerCase();
+                    const esVisible = texto.includes(termino);
+                    
+                    if (esVisible) {
+                        item.style.display = 'flex';
+                        encontrados++;
+                        // Resaltar el término buscado
+                        const enlace = item.querySelector('a');
+                        if (termino) {
+                            const textoOriginal = enlace.textContent;
+                            const regex = new RegExp(`(${termino})`, 'gi');
+                            enlace.innerHTML = textoOriginal.replace(regex, '<span class="resaltado">$1</span>');
+                        } else {
+                            const enlace = item.querySelector('a');
+                            enlace.innerHTML = enlace.textContent;
+                        }
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Actualizar contador
+                if (contador) {
+                    if (termino === '') {
+                        contador.textContent = '';
+                        contador.classList.remove('visible');
+                    } else {
+                        contador.textContent = `${encontrados} de ${pdfItems.length} resultados`;
+                        contador.classList.add('visible');
+                    }
+                }
+            });
+            
+            // Limpiar búsqueda con la tecla Escape
+            buscador.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    this.value = '';
+                    this.dispatchEvent(new Event('input'));
+                }
+            });
+        }
+        
+        // Inicializar buscador cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', buscarPDFs);
+        
+        // También inicializar cuando Firebase muestre la sección
+        document.addEventListener('firebaseAuthChanged', buscarPDFs);
+    </script>
 </body>
 </html>

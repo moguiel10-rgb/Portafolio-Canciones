@@ -24,12 +24,37 @@ body {
     margin-bottom: 60px;
 }
 
-/* Header */
+/*Header*/
+/* Botón fijo de video 
+#video-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 9999;
+    width: 45px;          
+    height: 45px;         
+    background: #1e3c72;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 20px;      
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+#video-btn:hover {
+    transform: scale(1.15);
+    background: #2817c5;
+}*/
 header {
     width: 100%;
     height: auto;
     min-height: 650px;
     background: #1e3c72;
+    background: -webkit-linear-gradient(to right, hsla(217, 60%, 28%, 0.616), hsla(215, 50%, 50%, 0.61)), url(./Imagenes/Verde.jpg);
     background: linear-gradient(to right, hsla(217, 60%, 28%, 0.616), hsla(215, 50%, 50%, 0.61)), url(./Imagenes/Verde.jpg);
     background-size: cover;
     background-attachment: fixed;
@@ -60,17 +85,16 @@ nav {
     justify-content: flex-end;
     flex-wrap: wrap;
 }
-
 .menu a {
-    color: white;
-    text-decoration: none;
-    margin: 0 5px;
-    padding: 5px 0;
+    color: white; /* Cambia el color a blanco */
+    text-decoration: none; /* Elimina el subrayado (líneas) */
+    margin: 0 5px; /* Espaciado entre enlaces */
+    padding: 5px 0; /* Espaciado interno */
     font-size: 22px;
 }
-
 .menu a:hover {
-    color: #333;
+    color: #333; /* Color ligeramente más oscuro al pasar el mouse */
+    /* Opcional: puedes agregar otros efectos hover si deseas */
 }
 
 nav > a {
@@ -120,7 +144,7 @@ header .textos-header {
     width: 100%;
 }
 
-/* About us */
+/*About us*/
 .sobre-nosotros {
     margin-bottom: 65px;
 }
@@ -201,14 +225,8 @@ p {
     font-size: 18px;
 }
 
-/* Buscador */
-.contenedor-buscador-principal {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 20px 0;
-}
-
+/*Galeria*/
+/* ===== BUSCADOR DE PDFs ===== */
 .buscador-container {
     display: flex;
     justify-content: center;
@@ -221,7 +239,7 @@ p {
 .buscador-box {
     position: relative;
     width: 100%;
-    max-width: 600px;
+    max-width: 600px; /* Aumentado de 400px a 600px para mejor centrado */
     margin: 0 auto;
     display: flex;
     justify-content: center;
@@ -280,7 +298,7 @@ p {
 .contador-resultados.visible {
     opacity: 1;
 }
-
+/* Resaltado de texto encontrado */
 .resaltado {
     background-color: #ffeb3b;
     color: #1e3c72;
@@ -289,6 +307,7 @@ p {
     border-radius: 3px;
 }
 
+/* Animación para resultados encontrados */
 @keyframes aparecer {
     from {
         opacity: 0;
@@ -304,12 +323,98 @@ p {
     animation: aparecer 0.3s ease forwards;
 }
 
-/* Portafolio */
+/* Responsive para el buscador */
+@media screen and (max-width: 900px) {
+    .buscador-container {
+        order: 3;
+        width: 100%;
+        margin: 20px 0;
+        padding: 0 15px;
+    }
+    
+    .buscador-box {
+        max-width: 100%;
+    }
+    
+    #buscador-pdf {
+        padding: 12px 15px 12px 40px;
+        font-size: 15px;
+    }
+    
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 15px 0;
+    }
+    
+    .menu-icon {
+        order: 1;
+        flex: 0 0 auto;
+    }
+    
+    .menu {
+        order: 4;
+        width: 100%;
+        margin-top: 15px;
+    }
+    
+    .buscador-container {
+        order: 2;
+        flex: 1;
+        margin: 0 15px;
+        max-width: 250px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .buscador-container {
+        max-width: 200px;
+        margin: 0 10px;
+    }
+    
+    #buscador-pdf {
+        padding: 10px 12px 10px 35px;
+        font-size: 14px;
+    }
+    
+    .buscador-box i {
+        font-size: 16px;
+        left: 12px;
+    }
+    
+    .contador-resultados {
+        display: none; /* Ocultar contador en móviles muy pequeños */
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .buscador-container {
+        max-width: 180px;
+    }
+    
+    #buscador-pdf {
+        padding: 8px 10px 8px 30px;
+        font-size: 13px;
+    }
+    
+    .buscador-box i {
+        font-size: 14px;
+        left: 10px;
+    }
+}
+
+/* Ajustes para cuando el menú está activo en móviles */
+@media screen and (max-width: 900px) {
+    .menu.active ~ .buscador-container {
+        display: none;
+    }
+}
 .portafolio {
     background: #f2f2f2;
     padding: 60px 0;
 }
-
 .pdf-list {
     display: flex;
     flex-wrap: wrap;
@@ -374,7 +479,7 @@ p {
     background-color: #0056b3;
 }
 
-/* Modal */
+/* Estilos para el modal */
 .modal {
     display: none;
     position: fixed;
@@ -436,6 +541,7 @@ p {
     font-size: 18px;
 }
 
+/* Efecto hover para el botón de ampliar */
 .pdf-item .ampliar-btn {
     position: absolute;
     top: 10px;
@@ -460,7 +566,6 @@ p {
     opacity: 1;
 }
 
-/* Sección Transponer */
 .seccion-transponer {
     background: #fff;
     padding: 60px 0;
@@ -517,7 +622,7 @@ h1 {
     margin-top: 0;
 }
 
-/* Input file personalizado */
+/* Estilo personalizado para el input de archivo */
 #pdfFile {
     display: none;
 }
@@ -618,7 +723,7 @@ iframe {
     100% { transform: rotate(360deg); }
 }
 
-/* Footer */
+/* Footer / Contactos */
 footer {
     background: #1e3c72;
     background: linear-gradient(to right, hsla(217, 60%, 28%, 0.9), hsla(215, 50%, 50%, 0.9));
@@ -697,7 +802,6 @@ footer {
     gap: 10px;
     margin-top: 10px;
 }
-
 .fa-brands.fa-whatsapp {
     font-size: 24px;
     color: #fff;
@@ -708,7 +812,6 @@ footer {
     color: #25D366;
     transform: scale(1.1);
 }
-
 .fa-solid.fa-envelope {
     font-size: 24px;
     color: #fff;
@@ -716,7 +819,7 @@ footer {
 }
 
 .fa-solid.fa-envelope:hover {
-    color: #f2a60c;
+    color: #f2a60c; /* puedes cambiarlo por el color que quieras al pasar el mouse */
     transform: scale(1.1);
 }
 
@@ -738,7 +841,13 @@ footer {
     color: rgba(255, 255, 255, 0.7);
     font-weight: 300;
 }
-
+/* Añade esto al final de tu CSS, antes de los media queries */
+.contenedor-buscador-principal {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
 /* Media Queries */
 @media screen and (max-width: 1200px) {
     .textos-header h1 {
@@ -814,52 +923,6 @@ footer {
         font-size: 12px;
         padding: 8px;
     }
-    
-    .buscador-container {
-        order: 3;
-        width: 100%;
-        margin: 20px 0;
-        padding: 0 15px;
-    }
-    
-    .buscador-box {
-        max-width: 100%;
-    }
-    
-    #buscador-pdf {
-        padding: 12px 15px 12px 40px;
-        font-size: 15px;
-    }
-    
-    nav {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 15px 0;
-    }
-    
-    .menu-icon {
-        order: 1;
-        flex: 0 0 auto;
-    }
-    
-    .menu {
-        order: 4;
-        width: 100%;
-        margin-top: 15px;
-    }
-    
-    .buscador-container {
-        order: 2;
-        flex: 1;
-        margin: 0 15px;
-        max-width: 250px;
-    }
-    
-    .menu.active ~ .buscador-container {
-        display: none;
-    }
 }
 
 @media screen and (max-width: 600px) {
@@ -907,25 +970,6 @@ footer {
     input[type="number"] {
         max-width: 100%;
     }
-    
-    .buscador-container {
-        max-width: 200px;
-        margin: 0 10px;
-    }
-    
-    #buscador-pdf {
-        padding: 10px 12px 10px 35px;
-        font-size: 14px;
-    }
-    
-    .buscador-box i {
-        font-size: 16px;
-        left: 12px;
-    }
-    
-    .contador-resultados {
-        display: none;
-    }
 }
 
 @media screen and (max-width: 400px) {
@@ -948,19 +992,5 @@ footer {
     .pdf-item a {
         font-size: 10px;
         padding: 5px;
-    }
-    
-    .buscador-container {
-        max-width: 180px;
-    }
-    
-    #buscador-pdf {
-        padding: 8px 10px 8px 30px;
-        font-size: 13px;
-    }
-    
-    .buscador-box i {
-        font-size: 14px;
-        left: 10px;
     }
 }
