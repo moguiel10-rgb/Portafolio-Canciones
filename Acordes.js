@@ -1,64 +1,202 @@
-// Efecto de zoom en la imagen
-function toggleZoom() {
-    const imagen = document.querySelector('.imagen-about-us');
-    imagen.classList.toggle('zoom-effect');
+// ====================================================================
+// SECCIÓN 1: CONFIGURACIÓN DE FIREBASE Y AUTENTICACIÓN
+// ====================================================================
+
+// Importar Firebase desde CDN (esto debe estar en el HTML)
+// Nota: Las siguientes líneas son para referencia, no se ejecutan aquí
+// <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js"></script>
+// <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js"></script>
+
+// Inicializar Firebase cuando esté disponible
+function inicializarFirebase() {
+    // Verificar si Firebase está cargado
+    if (typeof firebase === 'undefined') {
+        console.error('Firebase no está cargado. Esperando...');
+        setTimeout(inicializarFirebase, 500);
+        return;
+    }
     
-    setTimeout(() => {
-        imagen.classList.toggle('zoom-effect');
-    }, 1000);
+    const firebaseConfig = {
+        apiKey: "AIzaSyDbzwAI7OGNPSNMXqTDz5vJH1A-gE-VxKs",
+        authDomain: "conexion-4-13.firebaseapp.com",
+        projectId: "conexion-4-13",
+        storageBucket: "conexion-4-13.firebasestorage.app",
+        messagingSenderId: "508766935713",
+        appId: "1:508766935713:web:318bc72eb805de3faceee0",
+        measurementId: "G-HW8K01LJZQ"
+    };
+    
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    
+    // Escuchar cambios en la autenticación
+    auth.onAuthStateChanged((user) => {
+        const portafolio = document.getElementById('Portafolio');
+        const transponer = document.getElementById('transponer-pdf');
+        const loginLink = document.getElementById('login-link');
+        
+        if (user) {
+            console.log("Usuario autenticado:", user.email);
+            
+            // Mostrar secciones protegidas
+            if (portafolio) portafolio.style.display = 'block';
+            if (transponer) transponer.style.display = 'block';
+            
+            // Cambiar enlace a "Cerrar Sesión"
+            if (loginLink) {
+                loginLink.textContent = 'Cerrar Sesión';
+                loginLink.href = '#';
+                loginLink.onclick = (e) => {
+                    e.preventDefault();
+                    auth.signOut().then(() => {
+                        window.location.reload();
+                    }).catch((error) => {
+                        console.error("Error al cerrar sesión:", error);
+                    });
+                };
+            }
+            
+        } else {
+            console.log("Usuario no autenticado.");
+            
+            // Ocultar secciones protegidas
+            if (portafolio) portafolio.style.display = 'none';
+            if (transponer) transponer.style.display = 'none';
+            
+            // Mantener enlace como "Iniciar Sesión"
+            if (loginLink) {
+                loginLink.textContent = 'Iniciar Sesión';
+                loginLink.href = 'login.html';
+                loginLink.onclick = null;
+            }
+        }
+        
+        // Disparar evento para que el buscador se inicialice después de mostrar la sección
+        document.dispatchEvent(new CustomEvent('firebaseAuthChanged'));
+    });
 }
 
-// Activar cada 5 segundos
-setInterval(toggleZoom, 8000);
+// ====================================================================
+// SECCIÓN 2: FUNCIONALIDAD DEL BUSCADOR
+// ====================================================================
 
-// Ejecutar inmediatamente al cargar
-window.addEventListener('load', () => {
-    setTimeout(toggleZoom, 1000);
-});
-
-// Menu responsive
-document.addEventListener('DOMContentLoaded', function() {
-    const menuIcon = document.querySelector('.menu-icon');
-    const menu = document.querySelector('.menu');
+function inicializarBuscador() {
+    const buscador = document.getElementById('buscador-pdf');
+    const pdfItems = document.querySelectorAll('.pdf-item');
+    const contador = document.getElementById('contador-resultados');
     
-    menuIcon.addEventListener('click', function() {
-        menu.classList.toggle('active');
+    if (!buscador) return;
+    
+    buscador.addEventListener('input', function() {
+        const termino = this.value.toLowerCase().trim();
+        let encontrados = 0;
+        
+        pdfItems.forEach(item => {
+            const texto = item.querySelector('a').textContent.toLowerCase();
+            const esVisible = texto.includes(termino);
+            
+            if (esVisible) {
+                item.style.display = 'flex';
+                encontrados++;
+                
+                // Resaltar el término buscado
+                const enlace = item.querySelector('a');
+                if (termino) {
+                    const textoOriginal = enlace.textContent;
+                    const regex = new RegExp(`(${termino})`, 'gi');
+                    enlace.innerHTML = textoOriginal.replace(regex, '<span class="resaltado">$1</span>');
+                } else {
+                    enlace.innerHTML = enlace.textContent;
+                }
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // Actualizar contador
+        if (contador) {
+            if (termino === '') {
+                contador.textContent = '';
+                contador.classList.remove('visible');
+            } else {
+                contador.textContent = `${encontrados} de ${pdfItems.length} resultados`;
+                contador.classList.add('visible');
+            }
+        }
     });
-});
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-const { jsPDF } = window.jspdf;
     
+    // Limpiar búsqueda con la tecla Escape
+    buscador.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            this.value = '';
+            this.dispatchEvent(new Event('input'));
+        }
+    });
+}
+
+// ====================================================================
+// SECCIÓN 3: FUNCIONES DE TRANSFORMACIÓN DE ACORDES
+// ====================================================================
+
+// Variables globales para la transposición
 const notas = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-const equivalencias = {"Db": "C#", "Eb": "D#", "Gb": "F#", "Ab": "G#", "Bb": "A#", "Cb": "B", "Fb": "E", "B#": "C", "E#": "F" };
-const seccionesNegritas = new Set(["Intro","Intro:","//Intro//","//Intro//:","////Intro////:","////Intro////","Verso","//Verso//", "Verso I", "Verso II","//Verso I//","///Verso I///","////Verso I////", "//Verso II//", "Verso III","Verso IV","Verso V","I","II","III","IV","Pre", "Pre Coro","//Pre Coro//","//Pre", "Coro","Coro I","Coro II","//Coro I//","//Coro II//","////Coro II////","Coro III","//Coro//","///Coro///","////Coro////","Coro//", "Puente","//Puente//","//Puente I//","Puente I","Puente II","///Puente I///","////Puente I////","////Puente II////","//Puente II//","///Puente II///","///Puente///","////Puente////","Inter","Inter:","//Inter//","//Inter//:","////Inter////","////Inter////:","Intermedios", "Final","//Final//:", "Outro","Rap:","Rap",":","////Aplausos////:", "Espontaneo","Espontanea","Puente termina en:",  "Ultima vuelta para ir al coro"]);
+const equivalencias = {
+    "Db": "C#", "Eb": "D#", "Gb": "F#", "Ab": "G#", 
+    "Bb": "A#", "Cb": "B", "Fb": "E", "B#": "C", "E#": "F"
+};
+const seccionesNegritas = new Set([
+    "Intro", "Intro:", "//Intro//", "//Intro//:", "////Intro////:", 
+    "////Intro////", "Verso", "//Verso//", "Verso I", "Verso II", 
+    "//Verso I//", "///Verso I///", "////Verso I////", "//Verso II//", 
+    "Verso III", "Verso IV", "Verso V", "I", "II", "III", "IV", 
+    "Pre", "Pre Coro", "//Pre Coro//", "//Pre", "Coro", "Coro I", 
+    "Coro II", "//Coro I//", "//Coro II//", "////Coro II////", 
+    "Coro III", "//Coro//", "///Coro///", "////Coro////", "Coro//", 
+    "Puente", "//Puente//", "//Puente I//", "Puente I", "Puente II", 
+    "///Puente I///", "////Puente I////", "////Puente II////", 
+    "//Puente II//", "///Puente II///", "///Puente///", 
+    "////Puente////", "Inter", "Inter:", "//Inter//", "//Inter//:", 
+    "////Inter////", "////Inter////:", "Intermedios", "Final", 
+    "//Final//:", "Outro", "Rap:", "Rap", ":", "////Aplausos////:", 
+    "Espontaneo", "Espontanea", "Puente termina en:", 
+    "Ultima vuelta para ir al coro"
+]);
 
 // Lista de palabras comunes que NO deben ser interpretadas como acordes
 const palabrasExcluidas = new Set([
-    "Dios", "Digno","Coro", "El", "En", "Es","De","Caen", "Fe", "Gloria", "Gracia", "Amor", "Alabanza","Gozo","Fuente",
-    "Fluye","Cristo", "Jesús", "Señor", "Rey", "Padre", "Espíritu", "Santo", "Cielo", "Tierra",
-    "Corazón", "Alma", "Vida", "Luz", "Paz", "Gozo", "Esperanza", "Salvación", "Eternidad",
-    "Adoración", "Bendición", "Misericordia", "Perdón", "Redención", "Santidad", "Poder",
-    "Fuerza", "Refugio", "Fortaleza", "Protección", "Guía", "Camino", "Verdad", "Justicia",
-    "Bondad", "Fidelidad", "Compasión", "Ternura", "Dulzura", "Hermosura", "Majestad",
-    "Grandeza", "Infinito", "Eterno", "Perfecto", "Puro", "Limpio", "Nuevo", "Viejo",
-    "Grande", "Pequeño", "Alto", "Bajo", "Cerca", "Lejos", "Aquí", "Allí", "Ahora",
-    "Siempre", "Nunca", "Todo", "Nada", "Algo", "Alguien", "Nadie", "Todos", "Ninguno",
-    "Uno", "Dos", "Tres", "Cuatro", "Cinco", "Seis", "Siete", "Ocho", "Nueve", "Diez",
-    "Primero", "Segundo", "Tercero", "Último", "Final", "Inicio", "Principio", "Fin",
-    "Día", "Noche", "Mañana", "Tarde", "Hora", "Tiempo", "Momento", "Instante", "Segundo",
-    "Minuto", "Año", "Mes", "Semana", "Hoy", "Ayer", "Mañana", "Antes", "Después", "Durante",
-    "Casa", "Hogar", "Familia", "Hermano", "Hermana", "Hijo", "Hija", "Madre", "Padre",
-    "Abuelo", "Abuela", "Tío", "Tía", "Primo", "Prima", "Esposo", "Esposa", "Amigo", "Amiga",
-    "Pueblo", "Ciudad", "País", "Mundo", "Universo", "Creación", "Naturaleza", "Mar", "Río",
-    "Monte", "Valle", "Cielo", "Estrella", "Sol", "Luna", "Viento", "Lluvia", "Fuego", "Agua",
-    "Aire", "Tierra", "Piedra", "Arena", "Hierba", "Árbol", "Flor", "Fruto", "Semilla", "Raíz"
+    "Dios", "Digno", "Coro", "El", "En", "Es", "De", "Caen", "Fe", 
+    "Gloria", "Gracia", "Amor", "Alabanza", "Gozo", "Fuente", "Fluye", 
+    "Cristo", "Jesús", "Señor", "Rey", "Padre", "Espíritu", "Santo", 
+    "Cielo", "Tierra", "Corazón", "Alma", "Vida", "Luz", "Paz", 
+    "Esperanza", "Salvación", "Eternidad", "Adoración", "Bendición", 
+    "Misericordia", "Perdón", "Redención", "Santidad", "Poder", 
+    "Fuerza", "Refugio", "Fortaleza", "Protección", "Guía", "Camino", 
+    "Verdad", "Justicia", "Bondad", "Fidelidad", "Compasión", 
+    "Ternura", "Dulzura", "Hermosura", "Majestad", "Grandeza", 
+    "Infinito", "Eterno", "Perfecto", "Puro", "Limpio", "Nuevo", 
+    "Viejo", "Grande", "Pequeño", "Alto", "Bajo", "Cerca", "Lejos", 
+    "Aquí", "Allí", "Ahora", "Siempre", "Nunca", "Todo", "Nada", 
+    "Algo", "Alguien", "Nadie", "Todos", "Ninguno", "Uno", "Dos", 
+    "Tres", "Cuatro", "Cinco", "Seis", "Siete", "Ocho", "Nueve", 
+    "Diez", "Primero", "Segundo", "Tercero", "Último", "Final", 
+    "Inicio", "Principio", "Fin", "Día", "Noche", "Mañana", "Tarde", 
+    "Hora", "Tiempo", "Momento", "Instante", "Segundo", "Minuto", 
+    "Año", "Mes", "Semana", "Hoy", "Ayer", "Mañana", "Antes", 
+    "Después", "Durante", "Casa", "Hogar", "Familia", "Hermano", 
+    "Hermana", "Hijo", "Hija", "Madre", "Padre", "Abuelo", "Abuela", 
+    "Tío", "Tía", "Primo", "Prima", "Esposo", "Esposa", "Amigo", 
+    "Amiga", "Pueblo", "Ciudad", "País", "Mundo", "Universo", 
+    "Creación", "Naturaleza", "Mar", "Río", "Monte", "Valle", 
+    "Cielo", "Estrella", "Sol", "Luna", "Viento", "Lluvia", "Fuego", 
+    "Agua", "Aire", "Tierra", "Piedra", "Arena", "Hierba", "Árbol", 
+    "Flor", "Fruto", "Semilla", "Raíz"
 ]);
 
+// Funciones de utilidad para acordes
 function esSeccionNegrita(texto) { 
     return texto ? seccionesNegritas.has(texto.trim().replace(/:$/, '')) : false; 
 }
-    
+
 function normalizarNota(nota) { 
     return equivalencias[nota] || nota; 
 }
@@ -77,7 +215,7 @@ function esAcorde(texto) {
     
     const t = texto.trim();
     
-    // Verificar longitud máxima (acordes no suelen ser muy largos)
+    // Verificar longitud máxima
     if (t.length > 8) return false;
     
     // Verificar que empiece con una nota válida (A-G)
@@ -86,7 +224,7 @@ function esAcorde(texto) {
     // Excluir palabras comunes que empiezan con A-G
     if (palabrasExcluidas.has(t)) return false;
     
-    // Excluir palabras que claramente son secciones de canciones
+    // Excluir secciones de canciones
     if (t.toLowerCase().startsWith("verso") || 
         t.toLowerCase().startsWith("coro") || 
         t.toLowerCase().startsWith("puente") ||
@@ -94,37 +232,22 @@ function esAcorde(texto) {
         t.toLowerCase().startsWith("final") ||
         t.toLowerCase().startsWith("outro")) return false;
     
-    // Patrón más estricto para acordes
-    // Debe empezar con nota (A-G), opcionalmente seguida de # o b,
-    // luego opcionalmente modificadores de acorde válidos
+    // Patrón para acordes
     const patronAcorde = /^[A-G][b#]?(m|maj|dim|aug|sus[24]?|add[0-9]+|alt|M|[0-9]+)*(\/[A-G][b#]?)?$/;
     
-    // Verificar que coincida con el patrón
     if (!patronAcorde.test(t)) return false;
     
-    // Verificaciones adicionales para evitar falsos positivos
+    // Verificaciones adicionales
+    if (t.length === 1) return true;
     
-    // Si tiene solo una letra (A, B, C, D, E, F, G), verificar contexto
-    if (t.length === 1) {
-        // Solo aceptar si es una nota sola (muy común en acordes)
-        return true;
-    }
+    if (t.length === 2) return /^[A-G][#b]$/.test(t);
     
-    // Si tiene dos caracteres, verificar que el segundo sea # o b
-    if (t.length === 2) {
-        return /^[A-G][#b]$/.test(t);
-    }
-    
-    // Para acordes más largos, verificar que tengan modificadores válidos
     const modificadoresValidos = ['m', 'maj', 'dim', 'aug', 'sus', 'add', 'alt', 'M'];
     const tieneModificadorValido = modificadoresValidos.some(mod => t.includes(mod));
     const tieneNumero = /\d/.test(t);
     const tieneBarra = t.includes('/');
     
-    // Si es más largo que 2 caracteres, debe tener al menos un modificador válido, número o barra
-    if (t.length > 2) {
-        return tieneModificadorValido || tieneNumero || tieneBarra;
-    }
+    if (t.length > 2) return tieneModificadorValido || tieneNumero || tieneBarra;
     
     return true;
 }
@@ -146,9 +269,8 @@ function procesarAcorde(acorde, semitonos) {
     const bajoTranspuesto = bajoOriginal ? transponerNota(bajoOriginal, semitonos) : null;
 
     let acordeTranspuesto = notaPrincipalTranspuesta + extension;
-    if (bajoTranspuesto) {
-        acordeTranspuesto += "/" + bajoTranspuesto;
-    }
+    if (bajoTranspuesto) acordeTranspuesto += "/" + bajoTranspuesto;
+    
     return { original: acorde, transpuesto: acordeTranspuesto };
 }
 
@@ -156,11 +278,9 @@ async function procesarPagina(page, docInstance, semitonos) {
     const content = await page.getTextContent();
     const viewport = page.getViewport({ scale: 1.0 });
     
-    // Ajustar el tamaño de la página en jsPDF para que coincida con el del PDF original
     docInstance.internal.pageSize.width = viewport.width;
     docInstance.internal.pageSize.height = viewport.height;
 
-    // Configurar y dibujar el borde de página
     const borderMargin = 25;
     const borderColor = 'black';
     const borderWidth = 1;
@@ -228,12 +348,8 @@ async function procesarPagina(page, docInstance, semitonos) {
 function leerArchivo(archivo) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = (event) => {
-            resolve(event.target.result);
-        };
-        reader.onerror = (error) => {
-            reject(error);
-        };
+        reader.onload = (event) => resolve(event.target.result);
+        reader.onerror = (error) => reject(error);
         reader.readAsArrayBuffer(archivo);
     });
 }
@@ -255,8 +371,13 @@ async function procesarPDF() {
     try {
         const arrayBuffer = await leerArchivo(archivo);
         
+        // Verificar que pdfjsLib esté disponible
+        if (typeof pdfjsLib === 'undefined') {
+            throw new Error('PDF.js no está cargado correctamente');
+        }
+        
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        const docInstance = new jsPDF({ unit: 'pt', compress: true });
+        const docInstance = new jspdf.jsPDF({ unit: 'pt', compress: true });
 
         for (let i = 1; i <= pdf.numPages; i++) {
             if (i > 1) docInstance.addPage();
@@ -291,69 +412,168 @@ async function procesarPDF() {
     }
 }
 
-document.getElementById('procesarBtn').addEventListener('click', procesarPDF);
+// ====================================================================
+// SECCIÓN 4: FUNCIONALIDADES GENERALES DE LA PÁGINA
+// ====================================================================
 
-// Mostrar nombre del archivo seleccionado
-document.getElementById('pdfFile').addEventListener('change', function(e) {
-    const fileName = e.target.files[0] ? e.target.files[0].name : "Ningún archivo seleccionado";
-    document.getElementById('file-name').textContent = fileName;
-});
+// Efecto de zoom en la imagen principal
+function toggleZoom() {
+    const imagen = document.querySelector('.imagen-about-us');
+    if (imagen) {
+        imagen.classList.toggle('zoom-effect');
+        setTimeout(() => {
+            imagen.classList.toggle('zoom-effect');
+        }, 1000);
+    }
+}
+
+// Menú responsive
+function inicializarMenuResponsive() {
+    const menuIcon = document.querySelector('.menu-icon');
+    const menu = document.querySelector('.menu');
+    
+    if (menuIcon && menu) {
+        menuIcon.addEventListener('click', function() {
+            menu.classList.toggle('active');
+        });
+    }
+}
 
 // Funcionalidad para ampliar imágenes del portafolio
-document.addEventListener('DOMContentLoaded', function() {
-  // Obtener el modal
-  const modal = document.getElementById('imagenModal');
-  const modalImg = document.getElementById('imagenAmpliada');
-  const pieFoto = document.getElementById('pieFoto');
-  const spanCerrar = document.getElementsByClassName('cerrar')[0];
-  
-  // Crear botones de ampliar para cada imagen
-  const pdfItems = document.querySelectorAll('.pdf-item');
-  pdfItems.forEach(item => {
-    const img = item.querySelector('img');
-    if (!img) return;
+function inicializarModalImagenes() {
+    const modal = document.getElementById('imagenModal');
+    if (!modal) return;
     
-    const altText = img.getAttribute('alt');
-    const downloadLink = item.querySelector('a').getAttribute('href');
+    const modalImg = document.getElementById('imagenAmpliada');
+    const pieFoto = document.getElementById('pieFoto');
+    const spanCerrar = document.getElementsByClassName('cerrar')[0];
     
-    // Crear botón de ampliar
-    const ampliarBtn = document.createElement('button');
-    ampliarBtn.className = 'ampliar-btn';
-    ampliarBtn.innerHTML = '🔍';
-    ampliarBtn.title = 'Ampliar imagen';
-    item.prepend(ampliarBtn);
-    
-    // Evento para el botón de ampliar
-    ampliarBtn.addEventListener('click', function() {
-      modal.style.display = 'block';
-      modalImg.src = img.src;
-      pieFoto.textContent = altText + ' - ' + downloadLink.split('/').pop();
+    // Crear botones de ampliar para cada imagen
+    const pdfItems = document.querySelectorAll('.pdf-item');
+    pdfItems.forEach(item => {
+        const img = item.querySelector('img');
+        if (!img) return;
+        
+        const altText = img.getAttribute('alt');
+        const downloadLink = item.querySelector('a').getAttribute('href');
+        
+        // Crear botón de ampliar
+        const ampliarBtn = document.createElement('button');
+        ampliarBtn.className = 'ampliar-btn';
+        ampliarBtn.innerHTML = '🔍';
+        ampliarBtn.title = 'Ampliar imagen';
+        item.prepend(ampliarBtn);
+        
+        // Evento para el botón de ampliar
+        ampliarBtn.addEventListener('click', function() {
+            modal.style.display = 'block';
+            modalImg.src = img.src;
+            pieFoto.textContent = altText + ' - ' + downloadLink.split('/').pop();
+        });
+        
+        // También permitir hacer clic directamente en la imagen
+        img.addEventListener('click', function() {
+            modal.style.display = 'block';
+            modalImg.src = img.src;
+            pieFoto.textContent = altText + ' - ' + downloadLink.split('/').pop();
+        });
     });
     
-    // También permitir hacer clic directamente en la imagen
-    img.addEventListener('click', function() {
-      modal.style.display = 'block';
-      modalImg.src = img.src;
-      pieFoto.textContent = altText + ' - ' + downloadLink.split('/').pop();
+    // Cerrar modal al hacer clic en la X
+    if (spanCerrar) {
+        spanCerrar.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+    }
+    
+    // Cerrar modal al hacer clic fuera de la imagen
+    modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
     });
-  });
-  
-  // Cerrar modal al hacer clic en la X
-  spanCerrar.addEventListener('click', function() {
-    modal.style.display = 'none';
-  });
-  
-  // Cerrar modal al hacer clic fuera de la imagen
-  modal.addEventListener('click', function(event) {
-    if (event.target === modal) {
-      modal.style.display = 'none';
+    
+    // Cerrar modal con tecla ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+        }
+    });
+}
+
+// Mostrar nombre del archivo seleccionado
+function inicializarInputArchivo() {
+    const pdfFileInput = document.getElementById('pdfFile');
+    if (pdfFileInput) {
+        pdfFileInput.addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : "Ningún archivo seleccionado";
+            const fileNameSpan = document.getElementById('file-name');
+            if (fileNameSpan) {
+                fileNameSpan.textContent = fileName;
+            }
+        });
     }
-  });
-  
-  // Cerrar modal con tecla ESC
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape' && modal.style.display === 'block') {
-      modal.style.display = 'none';
+}
+
+// ====================================================================
+// SECCIÓN 5: INICIALIZACIÓN GENERAL
+// ====================================================================
+
+// Función principal de inicialización
+function inicializarAplicacion() {
+    // 1. Inicializar Firebase
+    inicializarFirebase();
+    
+    // 2. Inicializar menú responsive
+    inicializarMenuResponsive();
+    
+    // 3. Inicializar buscador cuando el DOM esté listo
+    inicializarBuscador();
+    
+    // 4. Inicializar modal de imágenes
+    inicializarModalImagenes();
+    
+    // 5. Inicializar input de archivo
+    inicializarInputArchivo();
+    
+    // 6. Configurar PDF.js
+    if (typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
     }
-  });
-});
+    
+    // 7. Configurar botón de procesar PDF
+    const procesarBtn = document.getElementById('procesarBtn');
+    if (procesarBtn) {
+        procesarBtn.addEventListener('click', procesarPDF);
+    }
+    
+    // 8. Configurar efecto de zoom
+    window.addEventListener('load', () => {
+        setTimeout(toggleZoom, 1000);
+    });
+    
+    // 9. Activar zoom cada 8 segundos
+    setInterval(toggleZoom, 8000);
+    
+    // 10. Escuchar evento de Firebase para reinicializar buscador cuando se muestre la sección
+    document.addEventListener('firebaseAuthChanged', inicializarBuscador);
+}
+
+// ====================================================================
+// SECCIÓN 6: EJECUCIÓN CUANDO EL DOM ESTÉ LISTO
+// ====================================================================
+
+// Esperar a que el DOM esté completamente cargado
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarAplicacion);
+} else {
+    // DOM ya cargado
+    inicializarAplicacion();
+}
+
+// Exportar funciones importantes para uso externo si es necesario
+window.AcordesApp = {
+    procesarPDF,
+    inicializarBuscador,
+    toggleZoom
+};
