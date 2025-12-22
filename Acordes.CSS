@@ -74,7 +74,10 @@ nav {
     font-size: 30px;
     padding: 10px 20px;
     cursor: pointer;
-    text-align: right;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    z-index: 1001;
 }
 
 .menu {
