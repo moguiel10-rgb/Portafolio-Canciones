@@ -228,22 +228,24 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 20px auto;
+    margin: 30px auto 40px auto;
     width: 100%;
-    max-width: 500px;
     padding: 0 20px;
 }
 
 .buscador-box {
     position: relative;
     width: 100%;
-    max-width: 400px;
+    max-width: 600px; /* Aumentado de 400px a 600px para mejor centrado */
     margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .buscador-box i {
     position: absolute;
-    left: 15px;
+    left: 20px;
     top: 50%;
     transform: translateY(-50%);
     color: #2a5c9c;
@@ -253,21 +255,21 @@ p {
 
 #buscador-pdf {
     width: 100%;
-    padding: 14px 20px 14px 45px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 16px 20px 16px 50px;
+    border: 2px solid rgba(42, 92, 156, 0.3);
     border-radius: 30px;
-    font-size: 16px;
-    background: rgba(255, 255, 255, 0.9);
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.95);
     color: #1e3c72;
     outline: none;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
 #buscador-pdf:focus {
     border-color: #2a5c9c;
     background: white;
-    box-shadow: 0 4px 20px rgba(42, 92, 156, 0.3);
+    box-shadow: 0 8px 25px rgba(42, 92, 156, 0.2);
     transform: translateY(-2px);
 }
 
@@ -277,14 +279,14 @@ p {
 
 .contador-resultados {
     position: absolute;
-    right: 15px;
+    right: 20px;
     top: 50%;
     transform: translateY(-50%);
     background: #2a5c9c;
     color: white;
     font-size: 12px;
-    padding: 3px 8px;
-    border-radius: 10px;
+    padding: 4px 10px;
+    border-radius: 12px;
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -293,7 +295,6 @@ p {
 .contador-resultados.visible {
     opacity: 1;
 }
-
 /* Resaltado de texto encontrado */
 .resaltado {
     background-color: #ffeb3b;
@@ -837,7 +838,13 @@ footer {
     color: rgba(255, 255, 255, 0.7);
     font-weight: 300;
 }
-
+/* Añade esto al final de tu CSS, antes de los media queries */
+.contenedor-buscador-principal {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
 /* Media Queries */
 @media screen and (max-width: 1200px) {
     .textos-header h1 {
