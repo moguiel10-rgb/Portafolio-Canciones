@@ -1,41 +1,44 @@
 // Archivo: Anuncios.js
-
 document.addEventListener("deviceready", function () {
-    console.log("📱 deviceready OK – Iniciando lógica de AdMob...");
+    console.log("📱 AdMob listo (menú navegación)");
 
-    // Verificar si ya se mostró el interstitial inicial
-    const interstitialShown = localStorage.getItem('initialInterstitialShown');
-    
-    // 1. Lógica para mostrar interstitial SOLO UNA VEZ al inicio
-    function showInitialInterstitial() {
-        if (interstitialShown) {
-            console.log("ℹ️ Interstitial inicial ya fue mostrado anteriormente");
-            return;
-        }
-        
-        if (window.Median && window.Median.admob) {
-            try {
-                console.log("🎬 Mostrando interstitial inicial...");
-                // Marcar como mostrado ANTES de intentar mostrarlo
-                localStorage.setItem('initialInterstitialShown', 'true');
-                
-                // Primero preparamos/recargamos el interstitial
-                median.admob.interstitial.load();
-                
-                // Mostramos después de un breve retraso para asegurar que la app esté visible
-                setTimeout(() => {
-                    median.admob.showInterstitialIfReady();
-                    console.log("✅ Interstitial inicial mostrado");
-                }, 1000); // 1 segundo de retraso para mejor UX
-            } catch (error) {
-                console.error("❌ Error al mostrar interstitial inicial:", error);
-            }
-        } else {
-            console.warn("⚠️ Median AdMob no está disponible.");
+    const INTERSTITIAL_INTERVAL = 6 * 60 * 1000; // 6 minutos
+    const STORAGE_KEY = "lastInterstitialTime";
+
+    function canShowInterstitial() {
+        const lastTime = localStorage.getItem(STORAGE_KEY);
+        if (!lastTime) return true;
+        return (Date.now() - parseInt(lastTime, 10)) >= INTERSTITIAL_INTERVAL;
+    }
+
+    function showInterstitial() {
+        if (!window.Median || !window.Median.admob) return;
+        if (!canShowInterstitial()) return;
+
+        try {
+            median.admob.interstitial.load();
+            setTimeout(() => {
+                median.admob.showInterstitialIfReady();
+                localStorage.setItem(STORAGE_KEY, Date.now().toString());
+            }, 1200);
+        } catch (e) {
+            console.error("Error interstitial:", e);
         }
     }
 
-    // Mostrar interstitial al inicio (solo si no se ha mostrado antes)
-    showInitialInterstitial();
+    const enlacesConAnuncio = [
+        'a[href="#Portafolio"]',
+        'a[href="#transponer-pdf"]',
+        'a[href="#Contactos"]'
+    ];
+
+    enlacesConAnuncio.forEach(selector => {
+        document.querySelectorAll(selector).forEach(link => {
+            link.addEventListener("click", () => {
+                console.log("➡️ Navegación con posible intersticial:", selector);
+                showInterstitial();
+            });
+        });
+    });
 
 }, false);
